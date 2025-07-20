@@ -2,8 +2,10 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import { useRouter } from 'next/navigation';
 import { toast } from "sonner";
 import { z } from "zod";
+import api from "@/config/axiosConfig";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -12,11 +14,18 @@ import { Input } from "@/components/ui/input";
 
 const FormSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+      "Password must contain at least one uppercase letter, one lowercase letter, and one number",
+    ),
   remember: z.boolean().optional(),
 });
 
 export function LoginForm() {
+  const router = useRouter();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -26,14 +35,21 @@ export function LoginForm() {
     },
   });
 
-  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
-    toast("You submitted the following values", {
-      description: (
-        <pre className="mt-2 w-[320px] rounded-md bg-neutral-950 p-4">
-          <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-    });
+  const onSubmit = async (payload: z.infer<typeof FormSchema>) => {
+    try {
+      const response = await api.post("/api/auth/login", payload);
+      const { message, data, success } = response.data;
+      if (success) {
+        localStorage.setItem("isLoggedIn", success);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        toast.success(message || "Login successful");
+        router.push('/dashboard');
+      }
+      // redirect or save tokens here if needed
+    } catch (error: any) {
+      const msg = error?.response?.data?.message || "Login failed.";
+      toast.error(msg);
+    }
   };
 
   return (
