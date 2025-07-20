@@ -28,3 +28,20 @@ export interface GetCustomerResponse {
     total: number;
   };
 }
+
+export interface CustomerInputInterface {
+  name: string;
+  guardianName: string;
+  relation: string;
+  address: string;
+  aadharNumber?: string;
+  mobileNumber?: string;
+}
+
+export interface AddCustomerResponseInterface {
+  success: boolean;
+  message: string;
+  data: {
+    customerId: string;
+  };
+}

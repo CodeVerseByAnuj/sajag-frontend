@@ -1,5 +1,5 @@
 import api from "@/config/axiosConfig";
-import { GetCustomerParams , GetCustomerResponse } from "@/interface/customerInterface";
+import { GetCustomerParams , GetCustomerResponse , CustomerInputInterface , AddCustomerResponseInterface } from "@/interface/customerInterface";
 
 
 export const getCustomers = async (
@@ -24,4 +24,22 @@ export const getCustomers = async (
     throw new Error(msg);
   }
 };
+
+export const addOrUpdateCustomer = async (
+  customerData: CustomerInputInterface
+): Promise<AddCustomerResponseInterface> => {
+  try {
+    const response = await api.post("/api/customer/create-customer", customerData);
+
+    return {
+      success: true,
+      message: response.data?.message || "Customer created successfully",
+      data: response.data?.data,
+    };
+  } catch (error: any) {
+    const msg = error?.response?.data?.message || "Failed to create customer.";
+    throw new Error(msg);
+  }
+};
+
 

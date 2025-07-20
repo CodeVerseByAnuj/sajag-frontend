@@ -21,9 +21,8 @@ api.interceptors.response.use(
 
       try {
         // Just call the refresh endpoint — no tokens passed in body or headers
-        await axios.post(
-          `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/refresh-token`,
-          {},
+        await axios.get(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/api/auth/refresh-token`,
           { withCredentials: true }
         );
 

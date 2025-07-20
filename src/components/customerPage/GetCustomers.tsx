@@ -21,6 +21,7 @@ import { DataTable } from '../data-table/data-table';
 import { DataTablePagination } from '../data-table/data-table-pagination';
 import { DataTableViewOptions } from '../data-table/data-table-view-options';
 import { customerColumns } from './childComponents/customerColumns';
+import Link from 'next/link';
 
 export default function GetCustomers() {
   const [pagination, setPagination] = useState({ page: 1, limit: 5 });
@@ -119,8 +120,16 @@ export default function GetCustomers() {
     <div>
       <Card>
         <CardHeader>
-          <CardTitle>Customers</CardTitle>
-          <CardDescription>Manage and search your registered customers.</CardDescription>
+          <section className='flex justify-between'>
+            <div>
+              <CardTitle>Customers</CardTitle>
+              <CardDescription>Manage and search your registered customers.</CardDescription>
+            </div>
+            <Button asChild>
+              <Link href="/dashboard/add-customer">Add Customer</Link>
+            </Button>
+          </section>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
             <Input
               name="name"
