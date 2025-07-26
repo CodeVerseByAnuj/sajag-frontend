@@ -87,7 +87,7 @@ export function AccountSwitcher({
         </DropdownMenuGroup> */}
         <DropdownMenuSeparator />
         <div className="flex items-center justify-end px-2 py-1">
-          <Button onClick={handleLogout}>
+          <Button onClick={handleLogout} className="cursor-pointer">
             <LogOut />
             Log out
           </Button>
