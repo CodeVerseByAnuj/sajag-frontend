@@ -29,6 +29,7 @@ export const addOrUpdateCustomer = async (
   customerData: CustomerInputInterface
 ): Promise<AddCustomerResponseInterface> => {
   try {
+    console.log(customerData,'customerData')
     const response = await api.post("/api/customer/create-customer", customerData);
 
     return {
@@ -38,6 +39,16 @@ export const addOrUpdateCustomer = async (
     };
   } catch (error: any) {
     const msg = error?.response?.data?.message || "Failed to create customer.";
+    throw new Error(msg);
+  }
+};
+
+export const getCustomerById = async (customerId: string): Promise<CustomerInputInterface> => {
+  try {
+    const response = await api.get(`/api/customer/${customerId}`);
+    return response.data.data;
+  } catch (error: any) {
+    const msg = error?.response?.data?.message || "Failed to fetch customer details.";
     throw new Error(msg);
   }
 };

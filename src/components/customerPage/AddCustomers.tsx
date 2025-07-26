@@ -1,11 +1,11 @@
 'use client';
-
+import { useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import { AddCustomerResponseInterface } from '@/interface/customerInterface';
-import { addOrUpdateCustomer } from '@/services/customerService';
+import { addOrUpdateCustomer, getCustomerById } from '@/services/customerService';
 
 import {
   Form,
@@ -19,6 +19,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useSearchParams } from 'next/navigation';
 
 // ✅ Use updated schema
 const customerDataSchema = z.object({
@@ -49,9 +50,12 @@ type AddCustomersFormProps = {
 };
 
 export function AddCustomersForm({ defaultValues, onSubmit }: AddCustomersFormProps) {
+  const searchParams = useSearchParams();
+  const customerId = searchParams.get('customerId');
   const form = useForm<CustomerFormValues>({
     resolver: zodResolver(customerDataSchema),
     defaultValues: defaultValues || {
+      customerId: '',
       name: '',
       guardianName: '',
       relation: 'father',
@@ -63,17 +67,68 @@ export function AddCustomersForm({ defaultValues, onSubmit }: AddCustomersFormPr
 
   const handleSubmit = async (data: CustomerFormValues) => {
     try {
-      const response: AddCustomerResponseInterface = await addOrUpdateCustomer(data);
-      toast.success(response.message, {
-        description: `Customer ID: ${response.data.customerId}`,
-      });
-      form.reset();
+      // Map customerId to id for CustomerInputInterface
+      const customerInput = {
+        id: data.customerId ?? '', // Provide empty string if undefined
+        name: data.name,
+        guardianName: data.guardianName,
+        relation: data.relation,
+        address: data.address,
+        aadharNumber: data.aadharNumber,
+        mobileNumber: data.mobileNumber,
+      };
+      const response: AddCustomerResponseInterface = await addOrUpdateCustomer(customerInput);
+      if (response.success) {
+        setTimeout(() => {
+          getCustomer();
+        }, 300); // Delay 300ms before fetching updated data
+
+        toast.success(response.message, {
+          description: `Customer ID: ${response.data.customerId}`,
+        });
+        form.reset();
+      }
     } catch (error: any) {
       toast.error('Submission Failed', {
         description: error.message,
       });
     }
   };
+
+  const getCustomer = async () => {
+    if (!customerId) return;
+
+    try {
+      const res = await getCustomerById(customerId);
+      if (res) {
+        const values = {
+          customerId: res?.id,
+          name: res.name || '',
+          guardianName: res.guardianName || '',
+          relation: (res.relation as CustomerFormValues['relation']) || 'father',
+          address: res.address || '',
+          aadharNumber: res.aadharNumber || '',
+          mobileNumber: res.mobileNumber || '',
+        };
+        form.reset(values);
+        console.log('🚀 Form values after reset:', values);
+      } else {
+        toast.error('Customer not found');
+      }
+    } catch (error: any) {
+      toast.error('Failed to load customer', {
+        description: error.message,
+      });
+    }
+  };
+
+  // 🔽 Fetch & populate on mount if customerId exists
+  useEffect(() => {
+    if (customerId) {
+      getCustomer()
+    }
+  }, [customerId, form]);
+
 
   return (
     <Form {...form}>

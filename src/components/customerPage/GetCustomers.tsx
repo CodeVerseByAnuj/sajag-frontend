@@ -9,10 +9,7 @@ import {
 } from '@tanstack/react-table';
 import { useQuery } from '@tanstack/react-query';
 import { getCustomers } from '@/services/customerService';
-import {
-  GetCustomerParams,
-  GetCustomerResponse,
-} from '@/interface/customerInterface';
+import { GetCustomerParams, GetCustomerResponse } from '@/interface/customerInterface';
 import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
