@@ -234,8 +234,9 @@ export function AddCustomersForm({ defaultValues, onSubmit }: AddCustomersFormPr
         />
 
         <Button type="submit" className="w-full">
-          {defaultValues ? 'Update Customer' : 'Add Customer'}
+          {customerId ? 'Update Customer' : 'Add Customer'}
         </Button>
+
       </form>
     </Form>
   );
