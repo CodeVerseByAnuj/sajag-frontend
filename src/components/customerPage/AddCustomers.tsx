@@ -1,12 +1,17 @@
 'use client';
+
 import { useEffect } from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
+
+// Interfaces & Services
 import { AddCustomerResponseInterface } from '@/interface/customerInterface';
 import { addOrUpdateCustomer, getCustomerById } from '@/services/customerService';
 
+// UI Components
 import {
   Form,
   FormControl,
@@ -18,27 +23,33 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { useSearchParams } from 'next/navigation';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { Card } from '@/components/ui/card';
 
-// ✅ Use updated schema
+// Zod Schema
 const customerDataSchema = z.object({
   customerId: z.string().optional(),
-  name: z.string().min(1, "Name is required"),
-  guardianName: z.string().min(1, "Guardian name is required"),
-  relation: z.enum(["father", "mother", "wife", "husband", "son", "daughter", "other"]),
-  address: z.string().min(1, "Address is required"),
+  name: z.string().min(1, 'Name is required'),
+  guardianName: z.string().min(1, 'Guardian name is required'),
+  relation: z.enum(['father', 'mother', 'wife', 'husband', 'son', 'daughter', 'other']),
+  address: z.string().min(1, 'Address is required'),
   aadharNumber: z
     .string()
     .optional()
-    .refine(val => !val || /^\d{12}$/.test(val), {
-      message: "Aadhar number must be 12 digits",
+    .refine((val) => !val || /^\d{12}$/.test(val), {
+      message: 'Aadhar number must be 12 digits',
     }),
   mobileNumber: z
     .string()
     .optional()
-    .refine(val => !val || /^[6-9]\d{9}$/.test(val), {
-      message: "Enter a valid 10-digit mobile number",
+    .refine((val) => !val || /^[6-9]\d{9}$/.test(val), {
+      message: 'Enter a valid 10-digit mobile number',
     }),
 });
 
@@ -52,6 +63,7 @@ type AddCustomersFormProps = {
 export function AddCustomersForm({ defaultValues, onSubmit }: AddCustomersFormProps) {
   const searchParams = useSearchParams();
   const customerId = searchParams.get('customerId');
+
   const form = useForm<CustomerFormValues>({
     resolver: zodResolver(customerDataSchema),
     defaultValues: defaultValues || {
@@ -67,9 +79,8 @@ export function AddCustomersForm({ defaultValues, onSubmit }: AddCustomersFormPr
 
   const handleSubmit = async (data: CustomerFormValues) => {
     try {
-      // Map customerId to id for CustomerInputInterface
       const customerInput = {
-        customerId: data.customerId ?? '', // Provide empty string if undefined
+        customerId: data.customerId ?? '',
         name: data.name,
         guardianName: data.guardianName,
         relation: data.relation,
@@ -77,15 +88,15 @@ export function AddCustomersForm({ defaultValues, onSubmit }: AddCustomersFormPr
         aadharNumber: data.aadharNumber,
         mobileNumber: data.mobileNumber,
       };
-      const response: AddCustomerResponseInterface = await addOrUpdateCustomer(customerInput);
-      if (response.success) {
-        setTimeout(() => {
-          getCustomer();
-        }, 300); // Delay 300ms before fetching updated data
 
+      const response: AddCustomerResponseInterface = await addOrUpdateCustomer(customerInput);
+
+      if (response.success) {
+          getCustomer();
         toast.success(response.message, {
           description: `Customer ID: ${response.data.customerId}`,
         });
+
         form.reset();
       }
     } catch (error: any) {
@@ -101,7 +112,7 @@ export function AddCustomersForm({ defaultValues, onSubmit }: AddCustomersFormPr
     try {
       const res = await getCustomerById(customerId);
       if (res) {
-        const values = {
+        const values: CustomerFormValues = {
           customerId: customerId || '',
           name: res.name || '',
           guardianName: res.guardianName || '',
@@ -110,6 +121,7 @@ export function AddCustomersForm({ defaultValues, onSubmit }: AddCustomersFormPr
           aadharNumber: res.aadharNumber || '',
           mobileNumber: res.mobileNumber || '',
         };
+
         form.reset(values);
         console.log('🚀 Form values after reset:', values);
       } else {
@@ -122,31 +134,34 @@ export function AddCustomersForm({ defaultValues, onSubmit }: AddCustomersFormPr
     }
   };
 
-  // 🔽 Fetch & populate on mount if customerId exists
   useEffect(() => {
-    if (customerId) {
-      getCustomer()
-    }
+    if (customerId) getCustomer();
   }, [customerId, form]);
 
-
   return (
+  <Card className="p-6 max-w-3xl mx-auto shadow-lg">
+    <h2 className="text-xl font-semibold mb-6 text-center">
+      {customerId ? 'Update Customer' : 'Add New Customer'}
+    </h2>
+
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 max-w-2xl mx-auto">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {/* Full Name */}
         <FormField
           control={form.control}
           name="name"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="col-span-full">
               <FormLabel>Full Name</FormLabel>
               <FormControl>
-                <Input placeholder="Full Name" {...field} />
+                <Input placeholder="Enter full name" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
+        {/* Guardian Name */}
         <FormField
           control={form.control}
           name="guardianName"
@@ -154,28 +169,26 @@ export function AddCustomersForm({ defaultValues, onSubmit }: AddCustomersFormPr
             <FormItem>
               <FormLabel>Guardian Name</FormLabel>
               <FormControl>
-                <Input placeholder="Guardian Name" {...field} />
+                <Input placeholder="Enter guardian name" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
+        {/* Relation */}
         <FormField
           control={form.control}
           name="relation"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Relation</FormLabel>
-              <FormControl>
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                >
-                  <SelectTrigger>
+              <FormControl className="w-full">
+                <Select  onValueChange={field.onChange} defaultValue={field.value}>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select relation" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="w-full">
                     <SelectItem value="father">Father</SelectItem>
                     <SelectItem value="mother">Mother</SelectItem>
                     <SelectItem value="wife">Wife</SelectItem>
@@ -191,20 +204,22 @@ export function AddCustomersForm({ defaultValues, onSubmit }: AddCustomersFormPr
           )}
         />
 
+        {/* Address - Full width */}
         <FormField
           control={form.control}
           name="address"
           render={({ field }) => (
-            <FormItem>
+            <FormItem className="col-span-full">
               <FormLabel>Address</FormLabel>
               <FormControl>
-                <Textarea placeholder="123 Main Street, Delhi" {...field} />
+                <Textarea placeholder="123 Main Street, City, State" rows={3} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
+        {/* Aadhar Number */}
         <FormField
           control={form.control}
           name="aadharNumber"
@@ -219,6 +234,7 @@ export function AddCustomersForm({ defaultValues, onSubmit }: AddCustomersFormPr
           )}
         />
 
+        {/* Mobile Number */}
         <FormField
           control={form.control}
           name="mobileNumber"
@@ -226,18 +242,23 @@ export function AddCustomersForm({ defaultValues, onSubmit }: AddCustomersFormPr
             <FormItem>
               <FormLabel>Mobile Number</FormLabel>
               <FormControl>
-                <Input type="tel" maxLength={10} placeholder="7080708035" {...field} />
+                <Input type="tel" maxLength={10} placeholder="9876543210" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <Button type="submit" className="w-full">
-          {customerId ? 'Update Customer' : 'Add Customer'}
-        </Button>
-
+        {/* Submit Button - Full width */}
+        <div className="col-span-full">
+          <Button type="submit" className="w-full">
+            {customerId ? 'Update Customer' : 'Add Customer'}
+          </Button>
+        </div>
       </form>
     </Form>
+  </Card>
+
+
   );
 }
