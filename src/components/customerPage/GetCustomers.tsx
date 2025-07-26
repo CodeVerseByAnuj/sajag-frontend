@@ -11,7 +11,13 @@ import { useQuery } from '@tanstack/react-query';
 import { getCustomers } from '@/services/customerService';
 import { GetCustomerParams, GetCustomerResponse } from '@/interface/customerInterface';
 import { Input } from '@/components/ui/input';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Download } from 'lucide-react';
 import { DataTable } from '../data-table/data-table';
@@ -19,6 +25,8 @@ import { DataTablePagination } from '../data-table/data-table-pagination';
 import { DataTableViewOptions } from '../data-table/data-table-view-options';
 import { customerColumns } from './childComponents/customerColumns';
 import Link from 'next/link';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 export default function GetCustomers() {
   const [pagination, setPagination] = useState({ page: 1, limit: 5 });
@@ -73,23 +81,23 @@ export default function GetCustomers() {
       ],
     },
     onPaginationChange: (updater) => {
-      const next = typeof updater === 'function'
-        ? updater({
-          pageIndex: pagination.page - 1,
-          pageSize: pagination.limit,
-        })
-        : updater;
+      const next =
+        typeof updater === 'function'
+          ? updater({
+              pageIndex: pagination.page - 1,
+              pageSize: pagination.limit,
+            })
+          : updater;
 
       setPagination({
         page: next.pageIndex + 1, // convert back to 1-based
         limit: next.pageSize,
       });
     },
-
     onSortingChange: (updater) => {
       const nextSorting =
         typeof updater === 'function'
-          ? updater([]) // or use table.getState().sorting if you want current state
+          ? updater([])
           : updater;
 
       if (nextSorting.length > 0) {
@@ -113,11 +121,29 @@ export default function GetCustomers() {
     setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
+  const exportToPDF = () => {
+    const doc = new jsPDF();
+    const tableData = customers.map((customer, index) => [
+      index + 1,
+      customer.name,
+      customer.guardianName,
+      customer.address,
+      customer.createdAt ? new Date(customer.createdAt).toLocaleDateString() : '',
+    ]);
+
+    autoTable(doc, {
+      head: [['#', 'Name', 'Guardian Name', 'Address', 'Created At']],
+      body: tableData,
+    });
+
+    doc.save('customers.pdf');
+  };
+
   return (
     <div>
       <Card>
         <CardHeader>
-          <section className='flex justify-between'>
+          <section className="flex justify-between">
             <div>
               <CardTitle>Customers</CardTitle>
               <CardDescription>Manage and search your registered customers.</CardDescription>
@@ -147,9 +173,10 @@ export default function GetCustomers() {
               onChange={handleInputChange}
             />
           </div>
+
           <div className="mt-4 flex items-center gap-2">
             <DataTableViewOptions table={table} />
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" onClick={exportToPDF}>
               <Download className="h-4 w-4 mr-2" />
               <span className="hidden lg:inline">Export</span>
             </Button>
