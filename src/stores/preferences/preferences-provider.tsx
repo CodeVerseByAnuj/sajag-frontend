@@ -10,8 +10,8 @@ const PreferencesStoreContext = createContext<StoreApi<PreferencesState> | null>
 
 export const PreferencesStoreProvider = ({
   children,
-  themeMode,
-  themePreset,
+  themeMode = "dark", // ✅ default to dark
+  themePreset = "tangerine", // ✅ default to tangerine
 }: {
   children: React.ReactNode;
   themeMode: PreferencesState["themeMode"];
