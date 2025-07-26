@@ -4,6 +4,20 @@ import { ColumnDef } from '@tanstack/react-table';
 import { customerInterface } from '@/interface/customerInterface';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { Trash2, Eye } from 'lucide-react';
+import { toast } from 'sonner';
+import { deleteCustomer } from '@/services/customerService';
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from '@/components/ui/alert-dialog';
 
 export const customerColumns: ColumnDef<customerInterface>[] = [
   {
@@ -39,12 +53,46 @@ export const customerColumns: ColumnDef<customerInterface>[] = [
   {
     id: 'actions',
     header: 'Actions',
-    cell: ({ row }) => (
-      <Link href={`/dashboard/add-customer?customerId=${row.original.id}`}>
-        <Button variant="outline" size="sm">
-          View Details
-        </Button>
-      </Link>
-    ),
-  }
+    cell: ({ row }) => {
+      const handleDelete = async () => {
+        try {
+          await deleteCustomer(row.original.id);
+          toast.success('Customer deleted successfully');
+        } catch (error) {
+          console.error(error);
+          toast.error('Failed to delete customer');
+        }
+      };
+
+      return (
+        <div className="flex gap-2">
+          <Link href={`/dashboard/add-customer?customerId=${row.original.id}`}>
+            <Button variant="outline" size="icon">
+              <Eye className="w-4 h-4" />
+            </Button>
+          </Link>
+
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive" size="icon">
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete the customer from your database.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        </div>
+      );
+    },
+  },
 ];

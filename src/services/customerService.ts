@@ -53,4 +53,13 @@ export const getCustomerById = async (customerId: string): Promise<CustomerInput
   }
 };
 
+export const deleteCustomer = async (customerId: string): Promise<void> => {
+  try {
+    await api.delete(`/api/customer/delete-customer/${customerId}`);
+  } catch (error: any) {
+    const msg = error?.response?.data?.message || "Failed to delete customer.";
+    throw new Error(msg);
+  }
+};
+
 
