@@ -3,7 +3,8 @@
 import { useState } from "react";
 
 import { BadgeCheck, Bell, CreditCard, LogOut } from "lucide-react";
-
+import api from "@/config/axiosConfig";
+import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +16,7 @@ import {
   DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
 import { cn, getInitials } from "@/lib/utils";
+import { toast } from "sonner";
 
 export function AccountSwitcher({
   users,
@@ -28,6 +30,18 @@ export function AccountSwitcher({
   }>;
 }) {
   const [activeUser, setActiveUser] = useState(users[0]);
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await api.post("/api/auth/logout");
+      toast.success("Logged out successfully");
+      router.push("/auth/v2/login");
+    } catch (error) {
+      console.error("Error logging out:", error);
+      toast.error("Failed to log out. Please try again.");
+    }
+  };
 
   return (
     <DropdownMenu>
@@ -73,7 +87,7 @@ export function AccountSwitcher({
         </DropdownMenuGroup> */}
         <DropdownMenuSeparator />
         <div className="flex items-center justify-end px-2 py-1">
-          <Button>
+          <Button onClick={handleLogout}>
             <LogOut />
             Log out
           </Button>
