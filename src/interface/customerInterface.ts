@@ -30,7 +30,7 @@ export interface GetCustomerResponse {
 }
 
 export interface CustomerInputInterface {
-  id:string
+  customerId:string
   name: string;
   guardianName: string;
   relation: string;

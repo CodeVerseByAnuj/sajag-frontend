@@ -55,7 +55,7 @@ export function AddCustomersForm({ defaultValues, onSubmit }: AddCustomersFormPr
   const form = useForm<CustomerFormValues>({
     resolver: zodResolver(customerDataSchema),
     defaultValues: defaultValues || {
-      customerId: '',
+      customerId: customerId || '',
       name: '',
       guardianName: '',
       relation: 'father',
@@ -69,7 +69,7 @@ export function AddCustomersForm({ defaultValues, onSubmit }: AddCustomersFormPr
     try {
       // Map customerId to id for CustomerInputInterface
       const customerInput = {
-        id: data.customerId ?? '', // Provide empty string if undefined
+        customerId: data.customerId ?? '', // Provide empty string if undefined
         name: data.name,
         guardianName: data.guardianName,
         relation: data.relation,
@@ -102,7 +102,7 @@ export function AddCustomersForm({ defaultValues, onSubmit }: AddCustomersFormPr
       const res = await getCustomerById(customerId);
       if (res) {
         const values = {
-          customerId: res?.id,
+          customerId: customerId || '',
           name: res.name || '',
           guardianName: res.guardianName || '',
           relation: (res.relation as CustomerFormValues['relation']) || 'father',
