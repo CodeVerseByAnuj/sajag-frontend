@@ -5,7 +5,7 @@ const currentYear = new Date().getFullYear();
 export const APP_CONFIG = {
   name: "Studio Admin",
   version: packageJson.version,
-  copyright: `© ${currentYear}, Studio Admin.`,
+  copyright: `© ${currentYear}, Er. A. K. Gupta. All rights reserved.`,
   meta: {
     title: "Studio Admin - Modern Next.js Dashboard Starter Template",
     description:
