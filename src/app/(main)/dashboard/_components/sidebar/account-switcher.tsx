@@ -5,6 +5,7 @@ import { useState } from "react";
 import { BadgeCheck, Bell, CreditCard, LogOut } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -71,10 +72,12 @@ export function AccountSwitcher({
           </DropdownMenuItem>
         </DropdownMenuGroup> */}
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-          <LogOut />
-          Log out44
-        </DropdownMenuItem>
+        <div className="flex items-center justify-end px-2 py-1">
+          <Button>
+            <LogOut />
+            Log out
+          </Button>
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   );
