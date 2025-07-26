@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Trash2, Eye } from 'lucide-react';
 import { toast } from 'sonner';
 import { deleteCustomer } from '@/services/customerService';
+import { PackagePlus } from 'lucide-react';
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -68,15 +69,20 @@ export const customerColumns = (refetch: () => void): ColumnDef<customerInterfac
 
       return (
         <div className="flex gap-2">
+          <Link href={`/dashboard/items?customerId=${row.original.id}`}>
+            <Button className='cursor-pointer' variant="secondary" size="icon" title="Add Item">
+              <PackagePlus className="w-4 h-4" />
+            </Button>
+          </Link>
           <Link href={`/dashboard/add-customer?customerId=${row.original.id}`}>
-            <Button variant="outline" size="icon">
+            <Button className='cursor-pointer' variant="outline" size="icon" title="View Customer">
               <Eye className="w-4 h-4" />
             </Button>
           </Link>
 
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant="destructive" size="icon">
+              <Button className='cursor-pointer' variant="destructive" size="icon" title="Delete Customer">
                 <Trash2 className="w-4 h-4" />
               </Button>
             </AlertDialogTrigger>
