@@ -1,3 +1,4 @@
+// customerColumns.tsx
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
@@ -19,7 +20,7 @@ import {
   AlertDialogAction,
 } from '@/components/ui/alert-dialog';
 
-export const customerColumns: ColumnDef<customerInterface>[] = [
+export const customerColumns = (refetch: () => void): ColumnDef<customerInterface>[] => [
   {
     accessorKey: 'name',
     header: 'Name',
@@ -58,6 +59,7 @@ export const customerColumns: ColumnDef<customerInterface>[] = [
         try {
           await deleteCustomer(row.original.id);
           toast.success('Customer deleted successfully');
+          refetch(); // ✅ Trigger refetch
         } catch (error) {
           console.error(error);
           toast.error('Failed to delete customer');

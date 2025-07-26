@@ -53,7 +53,7 @@ export default function GetCustomers() {
 
   const table = useReactTable({
     data: customers,
-    columns: customerColumns,
+    columns: customerColumns(refetch),
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -158,7 +158,7 @@ export default function GetCustomers() {
 
         <CardContent className="flex flex-col gap-4">
           <div className="overflow-hidden rounded-md border">
-            <DataTable table={table} columns={customerColumns} />
+            <DataTable table={table} columns={customerColumns(refetch)} />
           </div>
           <DataTablePagination table={table} />
         </CardContent>
