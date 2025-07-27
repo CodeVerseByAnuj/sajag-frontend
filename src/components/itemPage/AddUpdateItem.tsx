@@ -39,7 +39,13 @@ const itemSchema = z.object({
     name: z.string().min(1, 'Item name is required'),
     itemWeight: z.string().min(1, 'Item weight is required'),
     category: z.enum(['gold', 'silver'], { required_error: 'Category is required' }),
-    percentage: z.number().min(1, 'Percentage is required'),
+    percentage: z
+        .string()
+        .min(1, 'Percentage is required')
+        .transform((val) => Number(val))
+        .refine((val) => !isNaN(val) && val > 0, {
+            message: 'Must be a valid amount',
+        }),
     amount: z
         .string()
         .min(1, 'Amount is required')
