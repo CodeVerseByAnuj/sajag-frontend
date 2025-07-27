@@ -51,7 +51,7 @@ export default function GetItems() {
 
   const table = useReactTable({
     data: items,
-    columns: itemColumns(refetch),
+    columns: itemColumns(refetch, customerId),
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -142,7 +142,7 @@ export default function GetItems() {
 
         <CardContent className="flex flex-col gap-4">
           <div className="overflow-hidden rounded-md border">
-            <DataTable table={table} columns={itemColumns(refetch)} />
+            <DataTable table={table} columns={itemColumns(refetch, customerId)} />
           </div>
           <DataTablePagination table={table} />
         </CardContent>

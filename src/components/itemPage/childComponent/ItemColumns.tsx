@@ -1,3 +1,4 @@
+// itemColumns.tsx
 'use client';
 
 import { ColumnDef } from '@tanstack/react-table';
@@ -6,7 +7,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Trash2, Eye } from 'lucide-react';
 import { toast } from 'sonner';
-import { deleteItem } from '@/services/itemService'; // ← make sure this exists
+import { deleteItem } from '@/services/itemService';
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -19,7 +20,10 @@ import {
   AlertDialogAction,
 } from '@/components/ui/alert-dialog';
 
-export const itemColumns = (refetch: () => void): ColumnDef<ItemInterface>[] => [
+export const itemColumns = (
+  refetch: () => void,
+  customerId: string
+): ColumnDef<ItemInterface>[] => [
   {
     accessorKey: 'name',
     header: 'Name',
@@ -67,7 +71,7 @@ export const itemColumns = (refetch: () => void): ColumnDef<ItemInterface>[] => 
 
       return (
         <div className="flex gap-2">
-          <Link href={`/dashboard/add-item?itemId=${item.id}`}>
+          <Link href={`/dashboard/add-item?customerId=${customerId}&itemId=${item.id}`}>
             <Button className="cursor-pointer" variant="outline" size="icon" title="View Item">
               <Eye className="w-4 h-4" />
             </Button>
