@@ -15,13 +15,16 @@ import { Download, Plus } from 'lucide-react';
 import Link from 'next/link';
 
 import { getItems } from '@/services/itemService';
-import { GetItemResponse , GetItemParams  } from '@/interface/itemImterface';
-import {itemColumns}  from './childComponent/ItemColumns';
+import { GetItemResponse, GetItemParams } from '@/interface/itemImterface';
+import { itemColumns } from './childComponent/ItemColumns';
 import { DataTable } from '../data-table/data-table';
 import { DataTablePagination } from '../data-table/data-table-pagination';
 import { DataTableViewOptions } from '../data-table/data-table-view-options';
+import { useSearchParams } from 'next/navigation';
 
 export default function GetItems() {
+  const searchParams = useSearchParams();
+  const customerId = searchParams.get('customerId') || '';
   const [pagination, setPagination] = useState({ page: 1, limit: 5 });
   const [filters, setFilters] = useState({ name: '', category: '' });
   const [sorting, setSorting] = useState<{ sortBy: string; sortOrder: 'asc' | 'desc' }>({
@@ -30,6 +33,7 @@ export default function GetItems() {
   });
 
   const queryParams: GetItemParams = {
+    customerId,
     ...pagination,
     ...filters,
     ...sorting,
@@ -105,8 +109,8 @@ export default function GetItems() {
               <CardDescription>Manage and search your inventory items.</CardDescription>
             </div>
             <Button asChild>
-              <Link href="/dashboard/add-item">
-                <Plus className="mr-2 h-4 w-4" />
+              <Link href={`/dashboard/add-item?customerId=${customerId}`}>
+                <Plus className="h-4 w-4" />
                 Add Item
               </Link>
             </Button>

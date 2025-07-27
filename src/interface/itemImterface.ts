@@ -12,6 +12,7 @@ export interface ItemInterface {
 }
 
 export interface GetItemParams {
+  customerId?: string;
   page: number;
   limit: number;
   name?: string;
@@ -25,4 +26,24 @@ export interface GetItemResponse {
   page: number;
   limit: number;
   total: number;
+}
+
+export interface AddItemInput {
+  itemId?: string;         // Optional for update
+  customerId: string;      // Required
+  name: string;
+  itemWeight: string;
+  category: 'gold' | 'silver';
+  percentage: number;
+  amount: number;
+  description?: string;
+  orderId?: string;        // Optional: auto-create if blank
+}
+
+export interface AddItemResponse {
+  success: boolean;
+  message: string;
+  data: {
+    itemId: string;
+  };
 }
