@@ -1,5 +1,5 @@
 import api from "@/config/axiosConfig";
-import { GetItemParams , GetItemResponse} from "@/interface/itemImterface";
+import { GetItemParams , GetItemResponse ,ItemInterface} from "@/interface/itemImterface";
 
 export const getItems = async (
   params: GetItemParams
@@ -7,7 +7,7 @@ export const getItems = async (
   try {
     const response = await api.get(`/api/item/get-items`, { params });
     const { page, limit, total } = response.data.data;
-console.log(response.data,'88')
+
     return {
       data:  response.data.data.data,
       page,
@@ -20,7 +20,7 @@ console.log(response.data,'88')
   }
 };
 
-export const getItemById = async (itemId: string): Promise<GetItemResponse> => {
+export const getItemById = async (itemId: string): Promise<ItemInterface> => {
   try {
     const response = await api.get(`/api/item/get-item/${itemId}`);
     return response.data.data;

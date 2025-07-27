@@ -30,7 +30,7 @@ import { Card } from '@/components/ui/card';
 
 // Services & Interfaces
 import { addOrUpdateItem, getItemById } from '@/services/itemService'; // implement accordingly
-import { AddItemInput, AddItemResponse } from '@/interface/itemImterface';
+import { AddItemInput, AddItemResponse , ItemInterface } from '@/interface/itemImterface';
 
 // Zod Schema
 const itemSchema = z.object({
@@ -67,7 +67,7 @@ export function AddOrUpdateItemForm() {
     const form = useForm<ItemFormValues>({
         resolver: zodResolver(itemSchema),
         defaultValues: {
-            itemId: '',
+            itemId: itemId || '',
             customerId: customerId,
             name: '',
             itemWeight: '',
@@ -83,21 +83,19 @@ export function AddOrUpdateItemForm() {
         if (!itemId) return;
         try {
             const res = await getItemById(itemId);
-            //   if (res) {
-            //     form.reset({
-            //       itemId: res.itemId,
-            //       customerId: res.customerId,
-            //       name: res.name,
-            //       itemWeight: res.itemWeight,
-            //       category: res.category,
-            //       percentage: res.percentage,
-            //       amount: res.amount,
-            //       description: res.description || '',
-            //       orderId: res.orderId || '',
-            //     });
-            //   } else {
-            //     toast.error('Item not found');
-            //   }
+            console.log(res,'res')
+              if (res) {
+                form.reset({
+                  name: res.name || '',
+                  itemWeight: res.itemWeight || '',
+                  category: (res.category === 'gold' || res.category === 'silver') ? res.category : 'gold',
+                  percentage: res.percentage || 0,
+                  amount: res.amount || 0,
+                  description: res.description || '',
+                });
+              } else {
+                toast.error('Item not found');
+              }
         } catch (error: any) {
             toast.error('Failed to load item', { description: error.message });
         }

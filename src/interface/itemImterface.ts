@@ -28,6 +28,19 @@ export interface GetItemResponse {
   total: number;
 }
 
+export interface ItemInterface {
+  id: string;
+  name: string;
+  category: string;
+  percentage: number;
+  amount: number;
+  itemWeight: string; // If this should be a number, change to: number
+  imagePath: string;
+  description: string;
+  createdAt: string; // ISO string date
+  updatedAt: string; // ISO string date
+}
+
 export interface AddItemInput {
   itemId?: string;         // Optional for update
   customerId: string;      // Required
