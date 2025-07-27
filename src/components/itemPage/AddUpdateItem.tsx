@@ -30,7 +30,7 @@ import { Card } from '@/components/ui/card';
 
 // Services & Interfaces
 import { addOrUpdateItem, getItemById } from '@/services/itemService'; // implement accordingly
-import { AddItemInput, AddItemResponse , ItemInterface } from '@/interface/itemImterface';
+import { AddItemInput, AddItemResponse, ItemInterface } from '@/interface/itemImterface';
 
 // Zod Schema
 const itemSchema = z.object({
@@ -40,19 +40,11 @@ const itemSchema = z.object({
     itemWeight: z.string().min(1, 'Item weight is required'),
     category: z.enum(['gold', 'silver'], { required_error: 'Category is required' }),
     percentage: z
-        .string()
-        .min(1, 'Percentage is required')
-        .transform((val) => Number(val))
-        .refine((val) => !isNaN(val) && val > 0, {
-            message: 'Must be a valid amount',
-        }),
+        .number({ invalid_type_error: 'Purity must be a number' })
+        .min(0.1, 'Must be greater than 0'),
     amount: z
-        .string()
-        .min(1, 'Amount is required')
-        .transform((val) => Number(val))
-        .refine((val) => !isNaN(val) && val > 0, {
-            message: 'Must be a valid amount',
-        }),
+        .number({ invalid_type_error: 'Amount must be a number' })
+        .min(1, 'Must be greater than 0'),
     description: z.string().optional(),
     orderId: z.string().optional(),
 });
@@ -72,7 +64,7 @@ export function AddOrUpdateItemForm() {
             name: '',
             itemWeight: '',
             category: 'gold',
-            percentage: 91.6,
+            percentage: 2,
             amount: 0,
             description: '',
             orderId: '',
@@ -83,19 +75,19 @@ export function AddOrUpdateItemForm() {
         if (!itemId) return;
         try {
             const res = await getItemById(itemId);
-            console.log(res,'res')
-              if (res) {
+            console.log(res, 'res')
+            if (res) {
                 form.reset({
-                  name: res.name || '',
-                  itemWeight: res.itemWeight || '',
-                  category: (res.category === 'gold' || res.category === 'silver') ? res.category : 'gold',
-                  percentage: res.percentage || 0,
-                  amount: res.amount || 0,
-                  description: res.description || '',
+                    name: res.name || '',
+                    itemWeight: res.itemWeight || '',
+                    category: (res.category === 'gold' || res.category === 'silver') ? res.category : 'gold',
+                    percentage: res.percentage || 0,
+                    amount: res.amount || 0,
+                    description: res.description || '',
                 });
-              } else {
+            } else {
                 toast.error('Item not found');
-              }
+            }
         } catch (error: any) {
             toast.error('Failed to load item', { description: error.message });
         }
@@ -190,12 +182,19 @@ export function AddOrUpdateItemForm() {
                             <FormItem>
                                 <FormLabel>Purity (%)</FormLabel>
                                 <FormControl>
-                                    <Input type="number" step="0.1" placeholder="e.g. 91.6" {...field} />
+                                    <Input
+                                        type="number"
+                                        step="0.1"
+                                        min={0.1}
+                                        {...field}
+                                        onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
+
 
                     <FormField
                         control={form.control}
@@ -204,13 +203,17 @@ export function AddOrUpdateItemForm() {
                             <FormItem>
                                 <FormLabel>Amount (INR)</FormLabel>
                                 <FormControl>
-                                    <Input type="number" placeholder="e.g. 75000" {...field} />
+                                    <Input
+                                        type="number"
+                                        min={1}
+                                        {...field}
+                                        onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
                         )}
                     />
-
                     <FormField
                         control={form.control}
                         name="description"
