@@ -39,3 +39,12 @@ export const addOrUpdateItem = async (data: any): Promise<any> => {
     throw new Error(msg);
   }
 };
+
+export const deleteItem = async (itemId: string): Promise<void> => {
+  try {
+    await api.delete(`/api/item/delete-item/${itemId}`);
+  } catch (error: any) {
+    const msg = error?.response?.data?.message || "Failed to delete item.";
+    throw new Error(msg);
+  }
+}
