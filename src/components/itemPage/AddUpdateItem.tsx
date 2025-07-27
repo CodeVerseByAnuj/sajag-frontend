@@ -56,12 +56,13 @@ type ItemFormValues = z.infer<typeof itemSchema>;
 export function AddOrUpdateItemForm() {
     const searchParams = useSearchParams();
     const itemId = searchParams.get('itemId');
+    const customerId = searchParams.get('customerId') || '';
 
     const form = useForm<ItemFormValues>({
         resolver: zodResolver(itemSchema),
         defaultValues: {
             itemId: '',
-            customerId: '',
+            customerId: customerId,
             name: '',
             itemWeight: '',
             category: 'gold',
@@ -127,19 +128,6 @@ export function AddOrUpdateItemForm() {
 
             <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    <FormField
-                        control={form.control}
-                        name="customerId"
-                        render={({ field }) => (
-                            <FormItem className="col-span-full">
-                                <FormLabel>Customer ID</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Enter customer ID" {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
 
                     <FormField
                         control={form.control}
