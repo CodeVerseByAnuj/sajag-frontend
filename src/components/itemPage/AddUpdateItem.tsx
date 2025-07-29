@@ -7,7 +7,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
 
-// UI Components
 import {
     Form,
     FormControl,
@@ -28,11 +27,9 @@ import {
 } from '@/components/ui/select';
 import { Card } from '@/components/ui/card';
 
-// Services & Interfaces
-import { addOrUpdateItem, getItemById } from '@/services/itemService'; // implement accordingly
-import { AddItemInput, AddItemResponse, ItemInterface } from '@/interface/itemImterface';
+import { addOrUpdateItem, getItemById } from '@/services/itemService';
+import { AddItemInput, AddItemResponse } from '@/interface/itemImterface';
 
-// Zod Schema
 const itemSchema = z.object({
     itemId: z.string().optional(),
     customerId: z.string().min(1, 'Customer ID is required'),
@@ -75,14 +72,15 @@ export function AddOrUpdateItemForm() {
         if (!itemId) return;
         try {
             const res = await getItemById(itemId);
-            console.log(res, 'res')
             if (res) {
                 form.reset({
+                    itemId: itemId || '',
+                    customerId: customerId || '',
                     name: res.name || '',
                     itemWeight: res.itemWeight || '',
-                    category: (res.category === 'gold' || res.category === 'silver') ? res.category : 'gold',
-                    percentage: res.percentage || 0,
-                    amount: res.amount || 0,
+                    category: res.category === 'gold' || res.category === 'silver' ? res.category : 'gold',
+                    percentage: Number(res.percentage) || 0,
+                    amount: Number(res.amount) || 0,
                     description: res.description || '',
                 });
             } else {
@@ -94,7 +92,7 @@ export function AddOrUpdateItemForm() {
     };
 
     useEffect(() => {
-        if (itemId) getItem();
+        getItem();
     }, [itemId]);
 
     const onSubmit = async (data: ItemFormValues) => {
@@ -186,7 +184,7 @@ export function AddOrUpdateItemForm() {
                                         type="number"
                                         step="0.1"
                                         min={0.1}
-                                        {...field}
+                                        value={field.value}
                                         onChange={(e) => field.onChange(parseFloat(e.target.value))}
                                     />
                                 </FormControl>
@@ -194,7 +192,6 @@ export function AddOrUpdateItemForm() {
                             </FormItem>
                         )}
                     />
-
 
                     <FormField
                         control={form.control}
@@ -206,7 +203,7 @@ export function AddOrUpdateItemForm() {
                                     <Input
                                         type="number"
                                         min={1}
-                                        {...field}
+                                        value={field.value}
                                         onChange={(e) => field.onChange(parseFloat(e.target.value))}
                                     />
                                 </FormControl>
@@ -214,6 +211,7 @@ export function AddOrUpdateItemForm() {
                             </FormItem>
                         )}
                     />
+
                     <FormField
                         control={form.control}
                         name="description"
