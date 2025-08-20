@@ -310,6 +310,84 @@ function PaymentHistory() {
           </p>
         </div>
       )}
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Payment History</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {/* Original Amount Input */}
+              <div className="space-y-2">
+                <label htmlFor="originalAmount" className="text-sm font-medium">
+                  principal Amount
+                </label>
+                <div className="relative">
+                  <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="originalAmount"
+                    type="number"
+                    placeholder="Enter original amount"
+                    className="pl-9"
+                    value={originalAmount}
+                    onChange={(e) => setOriginalAmount(e.target.value)}
+                    disabled={fetchLoading}
+                  />
+                </div>
+              </div>
+
+              {/* Monthly Interest Rate Input */}
+              <div className="space-y-2">
+                <label htmlFor="monthlyInterestRate" className="text-sm font-medium">
+                  Interest Ammount
+                </label>
+                <div className="relative">
+                  <Input
+                    id="monthlyInterestRate"
+                    type="number"
+                    placeholder="Enter interest rate"
+                    value={monthlyInterestRate}
+                    onChange={(e) => setMonthlyInterestRate(e.target.value)}
+                    disabled={fetchLoading}
+                    step="0.1"
+                    min="0"
+                    max="100"
+                  />
+                </div>
+              </div>
+
+              {/* Start Date Picker */}
+              <div className="space-y-2">
+                <label htmlFor="startDate" className="text-sm font-medium">
+                  paymentDate Date
+                </label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !startDate && "text-muted-foreground"
+                      )}
+                      disabled={fetchLoading}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {startDate ? format(startDate, "PPP") : "Select date"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={startDate}
+                      onSelect={(date) => date && setStartDate(date)}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+            </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }
