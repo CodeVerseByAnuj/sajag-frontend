@@ -6,7 +6,8 @@ import {
   GetPaymentHistoryParams,
   PaymentHistoryResponse,
   CalculateInterestRequest,
-  CalculateInterestResponse
+  CalculateInterestResponse,
+  
 } from "@/interface/paymentInterface";
 
 /**
@@ -126,6 +127,20 @@ export const calculateInterest = async (
     console.error("Status:", error?.response?.status);
     
     const msg = error?.response?.data?.message || "Failed to calculate interest.";
+    throw new Error(msg);
+  }
+};
+
+export const payment = async (paymentData: any): Promise<AddPaymentResponse> => {
+  try {
+    const response = await api.post("/api/payment/payment", paymentData);
+    return {
+      success: true,
+      message: response.data?.message || "Payment added successfully",
+      data: response.data?.data
+    };
+  } catch (error: any) {
+    const msg = error?.response?.data?.message || "Failed to add payment.";
     throw new Error(msg);
   }
 };

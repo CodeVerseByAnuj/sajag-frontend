@@ -1,3 +1,5 @@
+import { addPayment } from "@/services/paymentService";
+
 export interface PaymentCurrentStatus {
   originalAmount: number;
   remainingAmount: number;
@@ -94,5 +96,21 @@ export interface CalculateInterestResponse {
     daysCalculated: number;
     interest: number;
     totalAmount: number;
+  };
+}
+
+export interface AddPaymentInput {
+  itemId: string;
+  interestAmount: number | null;
+  principalAmount: number | null;
+  paymentDate: string ;
+}
+
+export interface AddPaymentResponse {
+  success: boolean;
+  message: string;
+  data: {
+    paymentId: string;
+    currentStatus: PaymentCurrentStatus;
   };
 }

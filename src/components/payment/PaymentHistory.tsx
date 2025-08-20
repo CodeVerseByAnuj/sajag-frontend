@@ -21,7 +21,7 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
-import { getPaymentDetails, calculateInterest } from "@/services/paymentService"
+import { getPaymentDetails, calculateInterest , payment} from "@/services/paymentService"
 import { CalculateInterestResponse } from "@/interface/paymentInterface"
 
 function PaymentHistory() {
@@ -34,6 +34,9 @@ function PaymentHistory() {
   const [fetchLoading, setFetchLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
   const [calculationResult, setCalculationResult] = useState<CalculateInterestResponse | null>(null)
+  const [paymentDate, setPaymentDate] = useState<Date | null>(null)
+  const [interestAmount, setInterestAmount] = useState<number | null>(null)
+  const [principalAmount, setPrincipalAmount] = useState<number | null>(null)
 
   useEffect(() => {
     // Get itemId from URL query params
@@ -69,6 +72,36 @@ function PaymentHistory() {
     }
   };
 
+  const handleAddPayment = async () => {
+    setLoading(true);
+    setError(null);
+    console.log(paymentDate ,'99');
+    try {
+      // Format paymentDate as 'YYYY-MM-DD' for API
+      const formattedPaymentDate = paymentDate ? format(paymentDate, "yyyy-MM-dd") : "";
+      const response = await payment({
+        itemId,
+        paymentDate: formattedPaymentDate,
+        principalAmount,
+        interestAmount,
+        // amount: principalAmount ?? 0,
+        // paymentType: "principal" // or another valid type as required by your API
+      });
+
+      if (response.success) {
+        // Payment added successfully
+        // You can also update the payment history state here
+      } else {
+        setError(response.message || 'Failed to add payment');
+      }
+    } catch (err: any) {
+      console.error('Error adding payment:', err);
+      setError(err.message || 'Failed to add payment');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleCalculate = async () => {
     setLoading(true);
     setError(null);
@@ -96,6 +129,9 @@ function PaymentHistory() {
         console.log(response)
         if (response.success) {
           setCalculationResult({ success: response.success, message: response.message ?? "", data: response.data });
+          setPrincipalAmount(response.data.amount);
+          setInterestAmount(response.data.interest);
+          // Remove setting paymentDate since paymentDate is not present in response.data
         }
       } catch (apiError) {
         console.error("API error:", apiError);
@@ -325,12 +361,12 @@ function PaymentHistory() {
                 <div className="relative">
                   <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
-                    id="originalAmount"
+                    id="principalAmount"
                     type="number"
-                    placeholder="Enter original amount"
+                    placeholder="Enter principal amount"
                     className="pl-9"
-                    value={originalAmount}
-                    onChange={(e) => setOriginalAmount(e.target.value)}
+                    value={principalAmount ?? ""}
+                    onChange={(e) => setPrincipalAmount(e.target.value === "" ? null : Number(e.target.value))}
                     disabled={fetchLoading}
                   />
                 </div>
@@ -343,11 +379,11 @@ function PaymentHistory() {
                 </label>
                 <div className="relative">
                   <Input
-                    id="monthlyInterestRate"
+                    id="interestAmount"
                     type="number"
-                    placeholder="Enter interest rate"
-                    value={monthlyInterestRate}
-                    onChange={(e) => setMonthlyInterestRate(e.target.value)}
+                    placeholder="Enter interest amount"
+                    value={interestAmount ?? ""}
+                    onChange={(e) => setInterestAmount(e.target.value === "" ? null : Number(e.target.value))}
                     disabled={fetchLoading}
                     step="0.1"
                     min="0"
@@ -359,7 +395,7 @@ function PaymentHistory() {
               {/* Start Date Picker */}
               <div className="space-y-2">
                 <label htmlFor="startDate" className="text-sm font-medium">
-                  paymentDate Date
+                  payment Date
                 </label>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -378,14 +414,20 @@ function PaymentHistory() {
                   <PopoverContent className="w-auto p-0">
                     <Calendar
                       mode="single"
-                      selected={startDate}
-                      onSelect={(date) => date && setStartDate(date)}
+                      selected={paymentDate ?? undefined}
+                      onSelect={(date) => date && setPaymentDate(date)}
                       initialFocus
                     />
                   </PopoverContent>
                 </Popover>
               </div>
             </div>
+            <Button
+              onClick={handleAddPayment}
+              disabled={fetchLoading}
+            >
+              Add Payment
+            </Button>
         </CardContent>
       </Card>
     </div>
