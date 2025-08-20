@@ -71,12 +71,19 @@ export const itemColumns = (
 
       return (
         <div className="flex gap-2">
+          <Link href={`/dashboard/calculate?customerId=${customerId}&itemId=${item.id}`}>
+            <Button className="cursor-pointer" variant="outline" size="icon" title="Edit Item">
+               payment
+            </Button>
+          </Link>
+
           <Link href={`/dashboard/add-item?customerId=${customerId}&itemId=${item.id}`}>
             <Button className="cursor-pointer" variant="outline" size="icon" title="View Item">
               <Eye className="w-4 h-4" />
             </Button>
           </Link>
 
+          
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button className="cursor-pointer" variant="destructive" size="icon" title="Delete Item">
