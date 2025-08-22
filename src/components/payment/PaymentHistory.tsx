@@ -21,11 +21,13 @@ import {
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
-import { getPaymentDetails, calculateInterest , payment} from "@/services/paymentService"
+import { getPaymentDetails, calculateInterest, payment } from "@/services/paymentService"
 import { CalculateInterestResponse } from "@/interface/paymentInterface"
+import { useSearchParams } from 'next/navigation'
 
 function PaymentHistory() {
-  const [itemId, setItemId] = useState<string>("")
+  const searchParams = useSearchParams();
+  const itemId = searchParams.get("itemId");
   const [originalAmount, setOriginalAmount] = useState<string>("")
   const [monthlyInterestRate, setMonthlyInterestRate] = useState<string>("2")
   const [startDate, setStartDate] = useState<Date>(new Date())
@@ -37,17 +39,25 @@ function PaymentHistory() {
   const [paymentDate, setPaymentDate] = useState<Date | null>(null)
   const [interestAmount, setInterestAmount] = useState<number | null>(null)
   const [principalAmount, setPrincipalAmount] = useState<number | null>(null)
+  const [summary, setSummary] = useState<{ totalPayments: number; totalInterest: number; totalPrincipal: number }>({
+    totalPayments: 0,
+    totalInterest: 0,
+    totalPrincipal: 0
+  });
+  const [paymentHistory, setPaymentHistory] = useState<Array<{
+    paymentId: string | number;
+    paymentDate: string;
+    paymentAmount: string | number;
+    interestAmount: string | number;
+    principalAmount: string | number;
+  }>>([]);
+  console.log(paymentHistory, "paymentHistory");
 
   useEffect(() => {
-    // Get itemId from URL query params
-    const params = new URLSearchParams(window.location.search);
-    const id = "cmehgph7g0005cbe68yj5i43d"
-
-    if (id) {
-      setItemId(id);
-      fetchPaymentDetails(id);
+    if (itemId) {
+      fetchPaymentDetails(itemId);
     }
-  }, []);
+  }, [itemId]);
 
   const fetchPaymentDetails = async (id: string) => {
     setFetchLoading(true);
@@ -56,7 +66,22 @@ function PaymentHistory() {
     try {
       const response = await getPaymentDetails(id);
       if (response.data?.currentStatus) {
+        setSummary({
+          totalPayments: response.data.summary.totalAmountPaid || 0,
+          totalInterest: response.data.summary.totalInterestPaid || 0,
+          totalPrincipal: response.data.summary.totalPrincipalPaid || 0
+        });
         setOriginalAmount(response.data.currentStatus.remainingAmount.toString());
+        setPaymentHistory(
+          (response.data.payments || []).map((p: any) => ({
+            paymentId: p.paymentId,
+            paymentDate: p.paymentDate ?? "",
+            paymentAmount: p.paymentAmount,
+            interestAmount: p.interestAmount ?? "", // Add interestAmount property
+            principalAmount: p.principalAmount ?? "", // Add principalAmount property
+            interestRate: p.interestRate ?? "", // Add interestRate property
+          }))
+        );
         if (response.data.currentStatus.monthlyInterestRate) {
           setMonthlyInterestRate(response.data.currentStatus.monthlyInterestRate.toString());
           if (response.data.currentStatus.interestPaidTill) {
@@ -75,7 +100,7 @@ function PaymentHistory() {
   const handleAddPayment = async () => {
     setLoading(true);
     setError(null);
-    console.log(paymentDate ,'99');
+    console.log(paymentDate, '99');
     try {
       // Format paymentDate as 'YYYY-MM-DD' for API
       const formattedPaymentDate = paymentDate ? format(paymentDate, "yyyy-MM-dd") : "";
@@ -150,6 +175,26 @@ function PaymentHistory() {
   return (
     <div className="container mx-auto py-6">
       <h1 className="text-2xl font-bold mb-6">Payment History</h1>
+      {/* Summary */}
+      <Card className="mb-6">
+        <CardHeader>
+          <CardTitle>Payment Summary</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex justify-between">
+            <span>Total Payments:</span>
+            <span>₹{summary.totalPayments}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Total Interest:</span>
+            <span>₹{summary.totalInterest}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>Overall Total:</span>
+            <span>₹{summary.totalPayments + summary.totalInterest + summary.totalPrincipal}</span>
+          </div>
+        </CardContent>
+      </Card>
 
       {error && (
         <Alert variant={error.includes("mock") ? "default" : "destructive"} className="mb-4">
@@ -353,81 +398,125 @@ function PaymentHistory() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {/* Original Amount Input */}
-              <div className="space-y-2">
-                <label htmlFor="originalAmount" className="text-sm font-medium">
-                  principal Amount
-                </label>
-                <div className="relative">
-                  <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="principalAmount"
-                    type="number"
-                    placeholder="Enter principal amount"
-                    className="pl-9"
-                    value={principalAmount ?? ""}
-                    onChange={(e) => setPrincipalAmount(e.target.value === "" ? null : Number(e.target.value))}
-                    disabled={fetchLoading}
-                  />
-                </div>
-              </div>
-
-              {/* Monthly Interest Rate Input */}
-              <div className="space-y-2">
-                <label htmlFor="monthlyInterestRate" className="text-sm font-medium">
-                  Interest Ammount
-                </label>
-                <div className="relative">
-                  <Input
-                    id="interestAmount"
-                    type="number"
-                    placeholder="Enter interest amount"
-                    value={interestAmount ?? ""}
-                    onChange={(e) => setInterestAmount(e.target.value === "" ? null : Number(e.target.value))}
-                    disabled={fetchLoading}
-                    step="0.1"
-                    min="0"
-                    max="100"
-                  />
-                </div>
-              </div>
-
-              {/* Start Date Picker */}
-              <div className="space-y-2">
-                <label htmlFor="startDate" className="text-sm font-medium">
-                  payment Date
-                </label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !startDate && "text-muted-foreground"
-                      )}
-                      disabled={fetchLoading}
-                    >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
-                      {startDate ? format(startDate, "PPP") : "Select date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={paymentDate ?? undefined}
-                      onSelect={(date) => date && setPaymentDate(date)}
-                      initialFocus
-                    />
-                  </PopoverContent>
-                </Popover>
+            {/* Original Amount Input */}
+            <div className="space-y-2">
+              <label htmlFor="originalAmount" className="text-sm font-medium">
+                principal Amount
+              </label>
+              <div className="relative">
+                <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="principalAmount"
+                  type="number"
+                  placeholder="Enter principal amount"
+                  className="pl-9"
+                  value={principalAmount ?? ""}
+                  onChange={(e) => setPrincipalAmount(e.target.value === "" ? null : Number(e.target.value))}
+                  disabled={fetchLoading}
+                />
               </div>
             </div>
-            <Button
-              onClick={handleAddPayment}
-              disabled={fetchLoading}
-            >
-              Add Payment
-            </Button>
+
+            {/* Monthly Interest Rate Input */}
+            <div className="space-y-2">
+              <label htmlFor="monthlyInterestRate" className="text-sm font-medium">
+                Interest Ammount
+              </label>
+              <div className="relative">
+                <Input
+                  id="interestAmount"
+                  type="number"
+                  placeholder="Enter interest amount"
+                  value={interestAmount ?? ""}
+                  onChange={(e) => setInterestAmount(e.target.value === "" ? null : Number(e.target.value))}
+                  disabled={fetchLoading}
+                  step="0.1"
+                  min="0"
+                  max="100"
+                />
+              </div>
+            </div>
+
+            {/* Start Date Picker */}
+            <div className="space-y-2">
+              <label htmlFor="startDate" className="text-sm font-medium">
+                payment Date
+              </label>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal",
+                      !startDate && "text-muted-foreground"
+                    )}
+                    disabled={fetchLoading}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {startDate ? format(startDate, "PPP") : "Select date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={paymentDate ?? undefined}
+                    onSelect={(date) => date && setPaymentDate(date)}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            </div>
+          </div>
+        </CardContent>
+        <CardFooter>
+          <Button
+            onClick={handleAddPayment}
+            className="ml-auto"
+            disabled={fetchLoading}
+          >
+            Add Payment
+          </Button>
+        </CardFooter>
+      </Card>
+      {/* Payment History */}
+      <Card className='mt-4'>
+        <CardHeader>
+          <CardTitle>Payment History</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {paymentHistory.map((payment) => (
+              <Card key={payment.paymentId} className="shadow-md border-primary/20">
+                <CardHeader className="pb-2 flex flex-row items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <CalendarIcon className="h-4 w-4 text-blue-500" />
+                    <span className="text-base font-semibold text-blue-700">
+                      {payment.paymentDate ? format(new Date(payment.paymentDate), "dd MMM yyyy, hh:mm a") : ""}
+                    </span>
+                  </div>
+                </CardHeader>
+                <CardContent className="pt-0">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <IndianRupee className="h-4 w-4 text-green-600" />
+                      <span className="text-sm font-medium text-green-700">Principal:</span>
+                      <span className="text-sm font-semibold">₹{payment.principalAmount}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <IndianRupee className="h-4 w-4 text-amber-600" />
+                      <span className="text-sm font-medium text-amber-700">Interest:</span>
+                      <span className="text-sm font-semibold">₹{payment.interestAmount}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <IndianRupee className="h-4 w-4 text-primary" />
+                      <span className="text-sm font-medium text-primary">Total Payment:</span>
+                      <span className="text-base font-bold">₹{payment.paymentAmount}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </CardContent>
       </Card>
     </div>
