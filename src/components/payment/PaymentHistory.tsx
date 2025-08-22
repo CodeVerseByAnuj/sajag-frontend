@@ -176,25 +176,29 @@ function PaymentHistory() {
     <div className="container mx-auto py-6">
       <h1 className="text-2xl font-bold mb-6">Payment History</h1>
       {/* Summary */}
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Payment Summary</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex justify-between">
-            <span>Total Payments:</span>
-            <span>₹{summary.totalPayments}</span>
-          </div>
-          <div className="flex justify-between">
-            <span>Total Interest:</span>
-            <span>₹{summary.totalInterest}</span>
-          </div>
-          <div className="flex justify-between">
-            <span>Overall Total:</span>
-            <span>₹{summary.totalPayments + summary.totalInterest + summary.totalPrincipal}</span>
-          </div>
-        </CardContent>
-      </Card>
+     {
+      summary && (
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Payment Summary</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex justify-between">
+              <span>Total Payments:</span>
+              <span>₹{summary.totalPayments}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Total Interest:</span>
+              <span>₹{summary.totalInterest}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Overall Total:</span>
+              <span>₹{summary.totalPayments + summary.totalInterest + summary.totalPrincipal}</span>
+            </div>
+          </CardContent>
+        </Card>
+      )
+     }
 
       {error && (
         <Alert variant={error.includes("mock") ? "default" : "destructive"} className="mb-4">
@@ -274,7 +278,7 @@ function PaymentHistory() {
                       disabled={fetchLoading}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {startDate ? format(startDate, "PPP") : "Select date"}
+                      {startDate ? `${format(startDate, "do MMM yyyy")}` : "Select date"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
@@ -304,7 +308,7 @@ function PaymentHistory() {
                       disabled={fetchLoading}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
-                      {endDate ? format(endDate, "PPP") : "Select date"}
+                      {endDate ? `${format(endDate, "do MMM yyyy")}` : "Select date"}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
@@ -453,7 +457,7 @@ function PaymentHistory() {
                     disabled={fetchLoading}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {startDate ? format(startDate, "PPP") : "Select date"}
+                    {startDate ? `${format(startDate, "do MMM yyyy")}` : "Select date"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
