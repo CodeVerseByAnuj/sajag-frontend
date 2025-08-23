@@ -40,7 +40,7 @@ export default function GetCustomers() {
     sortOrder: 'asc' | 'desc';
   }>({
     sortBy: 'createdAt',
-    sortOrder: 'asc',
+    sortOrder: 'desc', // default to descending
   });
 
   const queryParams: GetCustomerParams = {
