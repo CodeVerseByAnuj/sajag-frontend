@@ -6,6 +6,7 @@ import { ItemInterface } from '@/interface/itemImterface';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Trash2, Eye } from 'lucide-react';
+import { CreditCard } from 'lucide-react';
 import { toast } from 'sonner';
 import { deleteItem } from '@/services/itemService';
 import {
@@ -72,8 +73,8 @@ export const itemColumns = (
       return (
         <div className="flex gap-2">
           <Link href={`/dashboard/calculate?customerId=${customerId}&itemId=${item.id}`}>
-            <Button className="cursor-pointer" variant="outline" size="icon" title="Edit Item">
-               payment
+            <Button className="cursor-pointer" variant="outline" size="icon" title="Payment">
+              <CreditCard className="w-4 h-4" />
             </Button>
           </Link>
 

@@ -26,6 +26,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { Card } from '@/components/ui/card';
+import { useRouter } from 'next/navigation';
 
 import { addOrUpdateItem, getItemById } from '@/services/itemService';
 import { AddItemInput, AddItemResponse } from '@/interface/itemImterface';
@@ -49,6 +50,7 @@ const itemSchema = z.object({
 type ItemFormValues = z.infer<typeof itemSchema>;
 
 export function AddOrUpdateItemForm() {
+    const router = useRouter();
     const searchParams = useSearchParams();
     const itemId = searchParams.get('itemId');
     const customerId = searchParams.get('customerId') || '';
@@ -106,7 +108,9 @@ export function AddOrUpdateItemForm() {
             if (response.success) {
                 toast.success(response.message, {
                     description: `Item ID: ${response.data.itemId}`,
+
                 });
+                router.push(`/dashboard/items?customerId=${customerId}`);
                 form.reset();
             }
         } catch (error: any) {
@@ -128,7 +132,7 @@ export function AddOrUpdateItemForm() {
                         name="name"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Item Name</FormLabel>
+                                <FormLabel>Item Name <span className="text-red-500">*</span></FormLabel>
                                 <FormControl>
                                     <Input placeholder="e.g. Gold 33 Necklace" {...field} />
                                 </FormControl>
@@ -142,7 +146,7 @@ export function AddOrUpdateItemForm() {
                         name="itemWeight"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Item Weight (g)</FormLabel>
+                                <FormLabel>Item Weight (g) <span className="text-red-500">*</span></FormLabel>
                                 <FormControl>
                                     <Input type="text" placeholder="e.g. 15.2" {...field} />
                                 </FormControl>
@@ -156,7 +160,7 @@ export function AddOrUpdateItemForm() {
                         name="category"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Category</FormLabel>
+                                <FormLabel>Category <span className="text-red-500">*</span></FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value}>
                                     <FormControl>
                                         <SelectTrigger className="w-full">
@@ -178,7 +182,7 @@ export function AddOrUpdateItemForm() {
                         name="percentage"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Purity (%)</FormLabel>
+                                <FormLabel>Percentage (%) <span className="text-red-500">*</span></FormLabel>
                                 <FormControl>
                                     <Input
                                         type="number"
@@ -198,7 +202,7 @@ export function AddOrUpdateItemForm() {
                         name="amount"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Amount (INR)</FormLabel>
+                                <FormLabel>Amount <span className="text-red-500">*</span></FormLabel>
                                 <FormControl>
                                     <Input
                                         type="number"
@@ -226,7 +230,7 @@ export function AddOrUpdateItemForm() {
                         )}
                     />
 
-                    <FormField
+                    {/* <FormField
                         control={form.control}
                         name="orderId"
                         render={({ field }) => (
@@ -238,10 +242,13 @@ export function AddOrUpdateItemForm() {
                                 <FormMessage />
                             </FormItem>
                         )}
-                    />
+                    /> */}
 
-                    <div className="col-span-full">
-                        <Button type="submit" className="w-full">
+                    <div className="col-span-full flex justify-end gap-2">
+                        <Button type="button" variant="outline" onClick={() => router.push(`/dashboard/items?customerId=${customerId}`)}>
+                            Back
+                        </Button>
+                        <Button type="submit" >
                             {itemId ? 'Update Item' : 'Add Item'}
                         </Button>
                     </div>
