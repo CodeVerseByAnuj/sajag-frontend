@@ -1,15 +1,13 @@
-import api from "@/config/axiosConfig";
-import { GetItemParams , GetItemResponse ,ItemInterface} from "@/interface/itemImterface";
+import api from "@/config/axios-config";
+import { GetItemParams, GetItemResponse, ItemInterface } from "@/interface/item-imterface";
 
-export const getItems = async (
-  params: GetItemParams
-): Promise<GetItemResponse> => {
+export const getItems = async (params: GetItemParams): Promise<GetItemResponse> => {
   try {
     const response = await api.get(`/api/item/get-items`, { params });
     const { page, limit, total } = response.data.data;
 
     return {
-      data:  response.data.data.data,
+      data: response.data.data.data,
       page,
       limit,
       total,
@@ -47,4 +45,4 @@ export const deleteItem = async (itemId: string): Promise<void> => {
     const msg = error?.response?.data?.message || "Failed to delete item.";
     throw new Error(msg);
   }
-}
+};

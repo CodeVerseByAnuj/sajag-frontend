@@ -1,11 +1,7 @@
-import ItemList from '@/components/itemPage/ItemList';
+import ItemList from "@/components/itemPage/ItemList";
 
 function page() {
-  return (
-    <>
-      <ItemList />
-    </>
-  )
+  return <ItemList />;
 }
 
-export default page
+export default page;

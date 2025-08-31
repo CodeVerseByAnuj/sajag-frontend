@@ -1,46 +1,40 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
-  getPaginationRowModel,
-} from '@tanstack/react-table';
-import { useQuery } from '@tanstack/react-query';
-import { getCustomers } from '@/services/customerService';
-import { GetCustomerParams, GetCustomerResponse } from '@/interface/customerInterface';
-import { Input } from '@/components/ui/input';
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-  CardContent,
-} from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Download } from 'lucide-react';
-import { DataTable } from '../data-table/data-table';
-import { DataTablePagination } from '../data-table/data-table-pagination';
-import { DataTableViewOptions } from '../data-table/data-table-view-options';
-import { customerColumns } from './childComponents/customerColumns';
-import Link from 'next/link';
-import jsPDF from 'jspdf';
-import autoTable from 'jspdf-autotable';
+import { useState, useEffect } from "react";
+
+import Link from "next/link";
+
+import { useQuery } from "@tanstack/react-query";
+import { useReactTable, getCoreRowModel, getSortedRowModel, getPaginationRowModel } from "@tanstack/react-table";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
+import { Download } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { GetCustomerParams, GetCustomerResponse } from "../../interface/customer-interface";
+import { getCustomers } from "@/services/customer-service";
+
+import { DataTable } from "../data-table/data-table";
+import { DataTablePagination } from "../data-table/data-table-pagination";
+import { DataTableViewOptions } from "../data-table/data-table-view-options";
+
+import { customerColumns } from "./childComponents/customerColumns";
 
 export default function GetCustomers() {
   const [pagination, setPagination] = useState({ page: 1, limit: 5 });
   const [filters, setFilters] = useState({
-    name: '',
-    guardianName: '',
-    address: '',
+    name: "",
+    guardianName: "",
+    address: "",
   });
   const [sorting, setSorting] = useState<{
     sortBy: string;
-    sortOrder: 'asc' | 'desc';
+    sortOrder: "asc" | "desc";
   }>({
-    sortBy: 'createdAt',
-    sortOrder: 'desc', // default to descending
+    sortBy: "createdAt",
+    sortOrder: "desc", // default to descending
   });
 
   const queryParams: GetCustomerParams = {
@@ -50,7 +44,7 @@ export default function GetCustomers() {
   };
 
   const { data, isLoading, refetch } = useQuery<GetCustomerResponse>({
-    queryKey: ['customers', queryParams],
+    queryKey: ["customers", queryParams],
     queryFn: () => getCustomers(queryParams),
   });
 
@@ -76,13 +70,13 @@ export default function GetCustomers() {
       sorting: [
         {
           id: sorting.sortBy,
-          desc: sorting.sortOrder === 'desc',
+          desc: sorting.sortOrder === "desc",
         },
       ],
     },
     onPaginationChange: (updater) => {
       const next =
-        typeof updater === 'function'
+        typeof updater === "function"
           ? updater({
               pageIndex: pagination.page - 1,
               pageSize: pagination.limit,
@@ -95,15 +89,12 @@ export default function GetCustomers() {
       });
     },
     onSortingChange: (updater) => {
-      const nextSorting =
-        typeof updater === 'function'
-          ? updater([])
-          : updater;
+      const nextSorting = typeof updater === "function" ? updater([]) : updater;
 
       if (nextSorting.length > 0) {
         setSorting({
           sortBy: nextSorting[0].id,
-          sortOrder: nextSorting[0].desc ? 'desc' : 'asc',
+          sortOrder: nextSorting[0].desc ? "desc" : "asc",
         });
       }
     },
@@ -128,15 +119,15 @@ export default function GetCustomers() {
       customer.name,
       customer.guardianName,
       customer.address,
-      customer.createdAt ? new Date(customer.createdAt).toLocaleDateString() : '',
+      customer.createdAt ? new Date(customer.createdAt).toLocaleDateString() : "",
     ]);
 
     autoTable(doc, {
-      head: [['#', 'Name', 'Guardian Name', 'Address', 'Created At']],
+      head: [["#", "Name", "Guardian Name", "Address", "Created At"]],
       body: tableData,
     });
 
-    doc.save('customers.pdf');
+    doc.save("customers.pdf");
   };
 
   return (
@@ -153,13 +144,8 @@ export default function GetCustomers() {
             </Button>
           </section>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-            <Input
-              name="name"
-              placeholder="Search by Name"
-              value={filters.name}
-              onChange={handleInputChange}
-            />
+          <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
+            <Input name="name" placeholder="Search by Name" value={filters.name} onChange={handleInputChange} />
             <Input
               name="guardianName"
               placeholder="Search by Guardian Name"
@@ -177,7 +163,7 @@ export default function GetCustomers() {
           <div className="mt-4 flex items-center gap-2">
             <DataTableViewOptions table={table} />
             <Button variant="outline" size="sm" onClick={exportToPDF}>
-              <Download className="h-4 w-4 mr-2" />
+              <Download className="mr-2 h-4 w-4" />
               <span className="hidden lg:inline">Export</span>
             </Button>
           </div>

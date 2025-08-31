@@ -1,14 +1,13 @@
 // customerColumns.tsx
-'use client';
+"use client";
 
-import { ColumnDef } from '@tanstack/react-table';
-import { customerInterface } from '@/interface/customerInterface';
-import Link from 'next/link';
-import { Button } from '@/components/ui/button';
-import { Trash2, Eye } from 'lucide-react';
-import { toast } from 'sonner';
-import { deleteCustomer } from '@/services/customerService';
-import { PackagePlus } from 'lucide-react';
+import Link from "next/link";
+
+import { ColumnDef } from "@tanstack/react-table";
+import { Trash2, Eye } from "lucide-react";
+import { PackagePlus } from "lucide-react";
+import { toast } from "sonner";
+
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -19,71 +18,74 @@ import {
   AlertDialogFooter,
   AlertDialogCancel,
   AlertDialogAction,
-} from '@/components/ui/alert-dialog';
+} from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
+import { customerInterface } from "@/interface/customer-interface";
+import { deleteCustomer } from "@/services/customer-service";
 
 export const customerColumns = (refetch: () => void): ColumnDef<customerInterface>[] => [
   {
-    accessorKey: 'name',
-    header: 'Name',
+    accessorKey: "name",
+    header: "Name",
   },
   {
-    accessorKey: 'guardianName',
-    header: 'Guardian Name',
+    accessorKey: "guardianName",
+    header: "Guardian Name",
   },
   {
-    accessorKey: 'address',
-    header: 'Address',
+    accessorKey: "address",
+    header: "Address",
   },
   {
-    accessorKey: 'createdAt',
+    accessorKey: "createdAt",
     header: ({ column }) => (
-      <button onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Created At {column.getIsSorted() === 'asc' ? '↑' : column.getIsSorted() === 'desc' ? '↓' : ''}
+      <button onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+        Created At {column.getIsSorted() === "asc" ? "↑" : column.getIsSorted() === "desc" ? "↓" : ""}
       </button>
     ),
     cell: ({ row }) => new Date(row.original.createdAt).toLocaleString(),
   },
   {
-    accessorKey: 'updatedAt',
+    accessorKey: "updatedAt",
     header: ({ column }) => (
-      <button onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Updated At {column.getIsSorted() === 'asc' ? '↑' : column.getIsSorted() === 'desc' ? '↓' : ''}
+      <button onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+        Updated At {column.getIsSorted() === "asc" ? "↑" : column.getIsSorted() === "desc" ? "↓" : ""}
       </button>
     ),
     cell: ({ row }) => new Date(row.original.updatedAt).toLocaleString(),
   },
   {
-    id: 'actions',
-    header: 'Actions',
+    id: "actions",
+    header: "Actions",
     cell: ({ row }) => {
       const handleDelete = async () => {
         try {
           await deleteCustomer(row.original.id);
-          toast.success('Customer deleted successfully');
+          toast.success("Customer deleted successfully");
           refetch(); // ✅ Trigger refetch
         } catch (error) {
           console.error(error);
-          toast.error('Failed to delete customer');
+          toast.error("Failed to delete customer");
         }
       };
 
       return (
         <div className="flex gap-2">
           <Link href={`/dashboard/items?customerId=${row.original.id}`}>
-            <Button className='cursor-pointer' variant="secondary" size="icon" title="Add Item">
-              <PackagePlus className="w-4 h-4" />
+            <Button className="cursor-pointer" variant="secondary" size="icon" title="Add Item">
+              <PackagePlus className="h-4 w-4" />
             </Button>
           </Link>
           <Link href={`/dashboard/add-customer?customerId=${row.original.id}`}>
-            <Button className='cursor-pointer' variant="outline" size="icon" title="View Customer">
-              <Eye className="w-4 h-4" />
+            <Button className="cursor-pointer" variant="outline" size="icon" title="View Customer">
+              <Eye className="h-4 w-4" />
             </Button>
           </Link>
 
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button className='cursor-pointer' variant="destructive" size="icon" title="Delete Customer">
-                <Trash2 className="w-4 h-4" />
+              <Button className="cursor-pointer" variant="destructive" size="icon" title="Delete Customer">
+                <Trash2 className="h-4 w-4" />
               </Button>
             </AlertDialogTrigger>
             <AlertDialogContent>

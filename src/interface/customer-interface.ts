@@ -1,21 +1,21 @@
 export interface GetCustomerParams {
-    page?: number;
-    limit?: number;
-    name?: string;
-    guardianName?: string;
-    address?: string;
-    sortBy?: string;
-    sortOrder?: 'asc' | 'desc';
+  page?: number;
+  limit?: number;
+  name?: string;
+  guardianName?: string;
+  address?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
 }
 
 export interface customerInterface {
-    id: string
-    name: string
-    guardianName: string
-    address: string
-    relation: string
-    createdAt: string
-    updatedAt: string
+  id: string;
+  name: string;
+  guardianName: string;
+  address: string;
+  relation: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface GetCustomerResponse {
@@ -30,7 +30,7 @@ export interface GetCustomerResponse {
 }
 
 export interface CustomerInputInterface {
-  customerId:string
+  customerId: string;
   name: string;
   guardianName: string;
   relation: string;

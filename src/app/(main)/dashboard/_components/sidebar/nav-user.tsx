@@ -28,8 +28,7 @@ export function NavUser({
 
   return (
     <SidebarMenu>
-      <SidebarMenuItem>
-      </SidebarMenuItem>
+      <SidebarMenuItem></SidebarMenuItem>
     </SidebarMenu>
   );
 }
