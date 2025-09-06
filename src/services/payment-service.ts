@@ -140,6 +140,10 @@ export const payment = async (paymentData: any): Promise<AddPaymentResponse> => 
   } catch (error) {
     const err = error as { response: { data: { message: string } } }
     const msg = err.response.data.message ?? "Failed to add payment."
-    throw new Error(msg)
+    return { 
+      success: false, 
+      message: msg, 
+      data: { paymentId: "", currentStatus: "FAILED" as any } 
+    }
   }
 };
