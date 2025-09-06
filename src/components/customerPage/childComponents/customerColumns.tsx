@@ -37,24 +37,6 @@ export const customerColumns = (refetch: () => void): ColumnDef<customerInterfac
     header: "Address",
   },
   {
-    accessorKey: "createdAt",
-    header: ({ column }) => (
-      <button onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-        Created At {column.getIsSorted() === "asc" ? "↑" : column.getIsSorted() === "desc" ? "↓" : ""}
-      </button>
-    ),
-    cell: ({ row }) => new Date(row.original.createdAt).toLocaleString(),
-  },
-  {
-    accessorKey: "updatedAt",
-    header: ({ column }) => (
-      <button onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-        Updated At {column.getIsSorted() === "asc" ? "↑" : column.getIsSorted() === "desc" ? "↓" : ""}
-      </button>
-    ),
-    cell: ({ row }) => new Date(row.original.updatedAt).toLocaleString(),
-  },
-  {
     id: "actions",
     header: "Actions",
     cell: ({ row }) => {

@@ -160,34 +160,36 @@ export function AddCustomersForm({ defaultValues, onSubmit }: AddCustomersFormPr
           />
 
           {/* Relation */}
-          <FormField
-            control={form.control}
-            name="relation"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  Relation <span className="text-red-500">*</span>
-                </FormLabel>
-                <FormControl className="w-full">
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select relation" />
-                    </SelectTrigger>
-                    <SelectContent className="w-full">
-                      <SelectItem value="father">Father</SelectItem>
-                      <SelectItem value="mother">Mother</SelectItem>
-                      <SelectItem value="wife">Wife</SelectItem>
-                      <SelectItem value="husband">Husband</SelectItem>
-                      <SelectItem value="son">Son</SelectItem>
-                      <SelectItem value="daughter">Daughter</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          <div>
+            <FormField
+              control={form.control}
+              name="relation"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Relation <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl className="w-full">
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select relation" />
+                      </SelectTrigger>
+                      <SelectContent className="w-full">
+                        <SelectItem value="father">Father</SelectItem>
+                        <SelectItem value="mother">Mother</SelectItem>
+                        <SelectItem value="wife">Wife</SelectItem>
+                        <SelectItem value="husband">Husband</SelectItem>
+                        <SelectItem value="son">Son</SelectItem>
+                        <SelectItem value="daughter">Daughter</SelectItem>
+                        <SelectItem value="other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
           {/* Address */}
           <FormField
@@ -195,9 +197,13 @@ export function AddCustomersForm({ defaultValues, onSubmit }: AddCustomersFormPr
             name="address"
             render={({ field }) => (
               <FormItem className="col-span-full">
-                <FormLabel>Address</FormLabel>
+                <FormLabel>Address  <span className="text-red-500">*</span> </FormLabel>
                 <FormControl>
-                  <Textarea placeholder="123 Main Street, City, State" rows={3} {...field} />
+                  <Textarea
+                    placeholder="123 Main Street, City, State"
+                    rows={3}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -259,10 +265,23 @@ export function AddCustomersForm({ defaultValues, onSubmit }: AddCustomersFormPr
 
           {/* Buttons */}
           <div className="col-span-full flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={() => router.push("/dashboard/customers")}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.push('/dashboard/customers')}
+              disabled={form.formState.isSubmitting} // disable back button while submitting
+            >
               Back
             </Button>
-            <Button type="submit">{customerId ? "Update Customer" : "Add Customer"}</Button>
+            <Button type="submit" disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting
+                ? customerId
+                  ? 'Updating...'
+                  : 'Adding...'
+                : customerId
+                  ? 'Update Customer'
+                  : 'Add Customer'}
+            </Button>
           </div>
         </form>
       </Form>

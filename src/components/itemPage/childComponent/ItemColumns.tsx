@@ -45,7 +45,7 @@ export const itemColumns = (refetch: () => void, customerId: string): ColumnDef<
   },
   {
     accessorKey: "createdAt",
-    header: "Created At",
+    header: "Date",
     cell: ({ getValue }) => {
       const date = new Date(getValue() as string);
       return date.toLocaleDateString();

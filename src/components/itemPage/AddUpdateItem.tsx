@@ -25,7 +25,7 @@ const itemSchema = z.object({
   name: z.string().min(1, "Item name is required"),
   itemWeight: z.string().min(1, "Item weight is required"),
   category: z.enum(["gold", "silver"], { required_error: "Category is required" }),
-  percentage: z.number({ invalid_type_error: "Purity must be a number" }).min(0.1, "Must be greater than 0"),
+  percentage: z.number({ invalid_type_error: "Intrest Rate must be a number" }).min(0.1, "Must be greater than 0"),
   amount: z.number({ invalid_type_error: "Amount must be a number" }).min(1, "Must be greater than 0"),
   description: z.string().optional(),
   orderId: z.string().optional(),
@@ -221,7 +221,7 @@ export function AddOrUpdateItemForm() {
             )}
           />
 
-          {/* <FormField
+                    {/* <FormField
                         control={form.control}
                         name="orderId"
                         render={({ field }) => (
@@ -235,20 +235,30 @@ export function AddOrUpdateItemForm() {
                         )}
                     /> */}
 
-          <div className="col-span-full flex justify-end gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => router.push(`/dashboard/items?customerId=${customerId}`)}
-            >
-              Back
-            </Button>
-            <Button type="submit">{itemId ? "Update Item" : "Add Item"}</Button>
-          </div>
-        </form>
-      </Form>
-    </Card>
-  );
+                    <div className="col-span-full flex justify-end gap-2">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => router.push(`/dashboard/items?customerId=${customerId}`)}
+                            disabled={form.formState.isSubmitting} // disable while submitting
+                        >
+                            Back
+                        </Button>
+                        <Button type="submit" disabled={form.formState.isSubmitting}>
+                            {form.formState.isSubmitting
+                                ? itemId
+                                    ? 'Updating...'
+                                    : 'Adding...'
+                                : itemId
+                                    ? 'Update Item'
+                                    : 'Add Item'}
+                        </Button>
+                    </div>
+
+                </form>
+            </Form>
+        </Card>
+    );
 }
 
 export default AddOrUpdateItemForm;
