@@ -59,6 +59,22 @@ function PaymentHistory() {
     }
   }, [itemId]);
 
+  // Ensure endDate is never before startDate. If startDate is moved after endDate,
+  // update endDate to match startDate. Also ensure endDate defaults to today on mount.
+  useEffect(() => {
+    // If endDate is undefined/null, set to today
+    const today = new Date();
+    if (!endDate) {
+      setEndDate(today);
+      return;
+    }
+
+    // If startDate is after endDate, move endDate forward to startDate
+    if (startDate && endDate && startDate > endDate) {
+      setEndDate(startDate);
+    }
+  }, [startDate, endDate]);
+
   const fetchPaymentDetails = async (id: string) => {
     setFetchLoading(true);
     setError(null);
@@ -303,9 +319,9 @@ function PaymentHistory() {
                       variant="outline"
                       className={cn(
                         "w-full justify-start text-left font-normal",
-                        !endDate && "text-muted-foreground"
+                         "text-muted-foreground"
                       )}
-                      disabled={fetchLoading}
+                      // disabled={fetchLoading}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {endDate ? `${format(endDate, "do MMM yyyy")}` : "Select date"}
