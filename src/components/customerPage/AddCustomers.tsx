@@ -221,7 +221,7 @@ export function AddCustomersForm({ defaultValues, onSubmit }: AddCustomersFormPr
             name="address"
             render={({ field }) => (
               <FormItem className="col-span-full">
-                <FormLabel>Address</FormLabel>
+                <FormLabel>Address <span className="text-red-500">*</span></FormLabel>
                 <FormControl>
                   <Textarea
                     placeholder="123 Main Street, City, State"

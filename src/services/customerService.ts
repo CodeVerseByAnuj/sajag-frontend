@@ -38,7 +38,7 @@ export const addOrUpdateCustomer = async (
       data: response.data?.data,
     };
   } catch (error: any) {
-    const msg = error?.response?.data?.message || "Failed to create customer.";
+    const msg = error?.response?.data?.message || error?.response?.data?.error || "Failed to create customer.";
     throw new Error(msg);
   }
 };
