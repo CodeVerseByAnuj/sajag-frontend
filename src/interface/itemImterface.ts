@@ -57,6 +57,6 @@ export interface AddItemResponse {
   success: boolean;
   message: string;
   data: {
-    itemId: string;
+    itemId: { itemId: string }
   };
 }

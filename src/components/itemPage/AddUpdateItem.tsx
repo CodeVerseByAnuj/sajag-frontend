@@ -107,7 +107,7 @@ export function AddOrUpdateItemForm() {
 
             if (response.success) {
                 toast.success(response.message, {
-                    description: `Item ID: ${response.data.itemId}`,
+                    description: `Item ID: ${response.data.itemId.itemId}`,
 
                 });
                 router.push(`/dashboard/items?customerId=${customerId}`);
