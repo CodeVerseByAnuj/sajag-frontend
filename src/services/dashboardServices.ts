@@ -25,3 +25,15 @@ export const getDailyAggregates = async (): Promise<any> => {
         throw new Error(msg);
     }
 };
+
+
+export const getMontlyAggregates = async (): Promise<any> => {
+    try {
+        const response = await api.get("/api/insights/monthly");
+        const monthlyAggregates: DailyAggregatesData[] = response.data.data;
+        return monthlyAggregates;
+    } catch (error: any) {
+        const msg = error?.response?.data?.message || "Failed to fetch monthly aggregates.";
+        throw new Error(msg);
+    }
+};
