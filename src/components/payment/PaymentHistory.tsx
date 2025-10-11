@@ -495,7 +495,7 @@ function PaymentHistory() {
                   <div className="flex items-center gap-2">
                     <CalendarIcon className="h-4 w-4 text-blue-500" />
                     <span className="text-base font-semibold text-blue-700">
-                      {payment.paymentDate ? format(new Date(payment.paymentDate), "dd MMM yyyy, hh:mm a") : ""}
+                      {payment.paymentDate ? format(new Date(payment.paymentDate), "dd MMM yyyy") : ""}
                     </span>
                   </div>
                 </CardHeader>
