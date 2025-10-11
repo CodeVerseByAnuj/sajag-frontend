@@ -131,7 +131,14 @@ function PaymentHistory() {
 
       if (response.success) {
         // Payment added successfully
-        // You can also update the payment history state here
+        // Refetch payment details to refresh history and summary
+        if (itemId) {
+          await fetchPaymentDetails(itemId);
+        }
+        // Optionally clear the input fields after successful add
+        // setPrincipalAmount(null);
+        // setInterestAmount(null);
+        // setPaymentDate(new Date());
       } else {
         setError(response.message || 'Failed to add payment');
       }
@@ -492,9 +499,16 @@ function PaymentHistory() {
           <Button
             onClick={handleAddPayment}
             className="ml-auto"
-            disabled={fetchLoading}
+            disabled={fetchLoading || loading}
           >
-            Add Payment
+            {loading ? (
+              <>
+                <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                Adding...
+              </>
+            ) : (
+              "Add Payment"
+            )}
           </Button>
         </CardFooter>
       </Card>
