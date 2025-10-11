@@ -185,7 +185,7 @@ function PaymentHistory() {
           <CardContent>
             <div className="flex justify-between">
               <span>Total Payments:</span>
-              <span>₹{summary.totalPayments}</span>
+              <span>₹{summary.totalPrincipal}</span>
             </div>
             <div className="flex justify-between">
               <span>Total Interest:</span>
@@ -193,7 +193,7 @@ function PaymentHistory() {
             </div>
             <div className="flex justify-between">
               <span>Overall Total:</span>
-              <span>₹{summary.totalPayments + summary.totalInterest + summary.totalPrincipal}</span>
+              <span>₹{summary.totalPayments}</span>
             </div>
           </CardContent>
         </Card>
@@ -348,7 +348,7 @@ function PaymentHistory() {
 
       {/* Payment calculation results */}
       {calculationResult ? (
-        <Card>
+        <Card className='mb-6'>
           <CardHeader>
             <CardTitle>Interest Calculation Results</CardTitle>
           </CardHeader>
@@ -389,7 +389,7 @@ function PaymentHistory() {
           </CardContent>
         </Card>
       ) : (
-        <div className="bg-muted p-6 rounded-lg text-center">
+        <div className="bg-muted mb-6 p-6 rounded-lg text-center">
           <p className="text-muted-foreground">
             Enter values and click Calculate to see interest calculation results
           </p>
@@ -483,7 +483,7 @@ function PaymentHistory() {
         </CardFooter>
       </Card>
       {/* Payment History */}
-      <Card className='mt-4'>
+      <Card className='mt-6'>
         <CardHeader>
           <CardTitle>Payment History</CardTitle>
         </CardHeader>
