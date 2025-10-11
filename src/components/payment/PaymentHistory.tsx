@@ -36,7 +36,7 @@ function PaymentHistory() {
   const [fetchLoading, setFetchLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
   const [calculationResult, setCalculationResult] = useState<CalculateInterestResponse | null>(null)
-  const [paymentDate, setPaymentDate] = useState<Date | null>(null)
+  const [paymentDate, setPaymentDate] = useState<Date | null>(new Date())
   const [interestAmount, setInterestAmount] = useState<number | null>(null)
   const [principalAmount, setPrincipalAmount] = useState<number | null>(null)
   const [summary, setSummary] = useState<{ totalPayments: number; totalInterest: number; totalPrincipal: number }>({
@@ -442,9 +442,9 @@ function PaymentHistory() {
             </div>
 
             {/* Start Date Picker */}
-            <div className="space-y-2">
-              <label htmlFor="startDate" className="text-sm font-medium">
-                payment Date
+              <div className="space-y-2">
+              <label htmlFor="paymentDate" className="text-sm font-medium">
+                Payment Date
               </label>
               <Popover>
                 <PopoverTrigger asChild>
@@ -452,12 +452,12 @@ function PaymentHistory() {
                     variant="outline"
                     className={cn(
                       "w-full justify-start text-left font-normal",
-                      !startDate && "text-muted-foreground"
+                      !paymentDate && "text-muted-foreground"
                     )}
                     disabled={fetchLoading}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {startDate ? `${format(startDate, "do MMM yyyy")}` : "Select date"}
+                    {paymentDate ? `${format(paymentDate, "do MMM yyyy")}` : "Select date"}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
