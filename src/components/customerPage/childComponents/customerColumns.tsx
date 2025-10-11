@@ -21,40 +21,57 @@ import {
   AlertDialogAction,
 } from '@/components/ui/alert-dialog';
 
+// Format ISO date to `10oct2025` (day + short month lowercase + year)
+const formatDateShort = (iso?: string) => {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  const day = d.getDate();
+  const month = d.toLocaleString('en-US', { month: 'short' }).toLowerCase();
+  const year = d.getFullYear();
+  return `${day}${month}${year}`;
+};
+
 export const customerColumns = (refetch: () => void): ColumnDef<customerInterface>[] => [
   {
     accessorKey: 'name',
     header: 'Name',
+    cell: ({ row }) => (
+      <div className="flex items-center gap-2">
+        <div className="truncate" title={row.original.name}>
+          {row.original.name}
+        </div>
+      </div>
+    ),
   },
   {
     accessorKey: 'guardianName',
     header: 'Guardian Name',
+    cell: ({ row }) => <div className="truncate" title={row.original.guardianName}>{row.original.guardianName}</div>,
   },
   {
     accessorKey: 'address',
     header: 'Address',
+    cell: ({ row }) => <div className="truncate max-w-[300px]" title={row.original.address}>{row.original.address}</div>,
+  },
+  {
+    accessorKey: 'relation',
+    header: 'Relation',
+    cell: ({ row }) => <div className="truncate" title={row.original.relation}>{row.original.relation}</div>,
   },
   {
     accessorKey: 'createdAt',
-    header: ({ column }) => (
-      <button onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Created At {column.getIsSorted() === 'asc' ? '↑' : column.getIsSorted() === 'desc' ? '↓' : ''}
-      </button>
+    header: 'Date',
+    cell: ({ row }) => (
+      <div className="text-sm text-muted-foreground">
+        {formatDateShort(row.original.createdAt)}
+      </div>
     ),
-    cell: ({ row }) => new Date(row.original.createdAt).toLocaleString(),
-  },
-  {
-    accessorKey: 'updatedAt',
-    header: ({ column }) => (
-      <button onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-        Updated At {column.getIsSorted() === 'asc' ? '↑' : column.getIsSorted() === 'desc' ? '↓' : ''}
-      </button>
-    ),
-    cell: ({ row }) => new Date(row.original.updatedAt).toLocaleString(),
   },
   {
     id: 'actions',
-    header: 'Actions',
+    header: () => <div className="text-center">Actions</div>,
+    // Make actions a compact, centered cell
     cell: ({ row }) => {
       const handleDelete = async () => {
         try {
@@ -68,7 +85,7 @@ export const customerColumns = (refetch: () => void): ColumnDef<customerInterfac
       };
 
       return (
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center justify-center">
           <Link href={`/dashboard/items?customerId=${row.original.id}`}>
             <Button className='cursor-pointer' variant="secondary" size="icon" title="Add Item">
               <PackagePlus className="w-4 h-4" />

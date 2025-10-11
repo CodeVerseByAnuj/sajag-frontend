@@ -21,41 +21,56 @@ import {
   AlertDialogAction,
 } from '@/components/ui/alert-dialog';
 
+// Format ISO date to `10oct2025` (day + short month lowercase + year)
+const formatDateShort = (iso?: string) => {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  const day = d.getDate();
+  const month = d.toLocaleString('en-US', { month: 'short' }).toLowerCase();
+  const year = d.getFullYear();
+  return `${day}${month}${year}`;
+};
+
 export const itemColumns = (
   refetch: () => void,
   customerId: string
 ): ColumnDef<ItemInterface>[] => [
   {
     accessorKey: 'name',
-    header: 'Name',
+    header: () => <div className="text-left">Name</div>,
+    cell: ({ row }) => <div className="text-left truncate" title={row.original.name}>{row.original.name}</div>,
   },
   {
     accessorKey: 'category',
-    header: 'Category',
+    header: () => <div className="text-left">Category</div>,
+    cell: ({ row }) => <div className="text-left truncate" title={row.original.category}>{row.original.category}</div>,
   },
   {
     accessorKey: 'percentage',
-    header: 'Purity (%)',
+    header: () => <div className="text-right">Percentage (%)</div>,
+  cell: ({ getValue }) => <div className="text-right">{String(getValue() ?? '')}</div>,
   },
   {
     accessorKey: 'amount',
-    header: 'Amount',
+    header: () => <div className="text-right">Amount</div>,
+  cell: ({ getValue }) => <div className="text-right">{String(getValue() ?? '')}</div>,
   },
   {
     accessorKey: 'itemWeight',
-    header: 'Weight (g)',
+    header: () => <div className="text-right">Weight (g)</div>,
+  cell: ({ getValue }) => <div className="text-right">{String(getValue() ?? '')}</div>,
   },
   {
     accessorKey: 'createdAt',
-    header: 'Created At',
-    cell: ({ getValue }) => {
-      const date = new Date(getValue() as string);
-      return date.toLocaleDateString();
-    },
+    header: () => <div className="text-center">Date</div>,
+    cell: ({ getValue }) => (
+      <div className="text-center text-sm text-muted-foreground">{formatDateShort(getValue() as string)}</div>
+    ),
   },
   {
     id: 'actions',
-    header: 'Actions',
+    header: () => <div className="text-center">Actions</div>,
     cell: ({ row }) => {
       const item = row.original;
 
@@ -71,7 +86,7 @@ export const itemColumns = (
       };
 
       return (
-        <div className="flex gap-2">
+        <div className="flex gap-2 items-center justify-center">
           <Link href={`/dashboard/calculate?customerId=${customerId}&itemId=${item.id}`}>
             <Button className="cursor-pointer" variant="outline" size="icon" title="Payment">
               <CreditCard className="w-4 h-4" />
