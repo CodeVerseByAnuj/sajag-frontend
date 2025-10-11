@@ -113,7 +113,6 @@ export const calculateInterest = async (
   data: CalculateInterestRequest
 ): Promise<CalculateInterestResponse> => {
   try {
-    console.log("Calling calculate-interest API with data:", data);
     const response = await api.post("/api/payment/calculate-interest", data);
     console.log("API response:", response.data);
     return {
@@ -123,7 +122,7 @@ export const calculateInterest = async (
     };
   } catch (error: any) {
     console.error("Calculate interest API error:", error);
-    console.error("Response data:", error?.response?.data);
+    console.error("Response data:", error?.response?.data || error?.response?.data.error);
     console.error("Status:", error?.response?.status);
     
     const msg = error?.response?.data?.message || "Failed to calculate interest.";
