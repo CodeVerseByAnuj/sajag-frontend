@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { Calendar } from "@/components/ui/calendar"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -26,6 +27,7 @@ import { CalculateInterestResponse } from "@/interface/paymentInterface"
 import { useSearchParams } from 'next/navigation'
 
 function PaymentHistory() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const itemId = searchParams.get("itemId");
   const [originalAmount, setOriginalAmount] = useState<string>("")
@@ -199,29 +201,29 @@ function PaymentHistory() {
     <div className="container mx-auto py-6">
       <h1 className="text-2xl font-bold mb-6">Payment History</h1>
       {/* Summary */}
-     {
-      summary && (
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle>Payment Summary</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex justify-between">
-              <span>Total Payments:</span>
-              <span>₹{summary.totalPrincipal}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Total Interest:</span>
-              <span>₹{summary.totalInterest}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Overall Total:</span>
-              <span>₹{summary.totalPayments}</span>
-            </div>
-          </CardContent>
-        </Card>
-      )
-     }
+      {
+        summary && (
+          <Card className="mb-6">
+            <CardHeader>
+              <CardTitle>Payment Summary</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex justify-between">
+                <span>Total Payments:</span>
+                <span>₹{summary.totalPrincipal}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Total Interest:</span>
+                <span>₹{summary.totalInterest}</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Overall Total:</span>
+                <span>₹{summary.totalPayments}</span>
+              </div>
+            </CardContent>
+          </Card>
+        )
+      }
 
       {error && (
         <Alert variant={error.includes("mock") ? "default" : "destructive"} className="mb-4">
@@ -326,9 +328,9 @@ function PaymentHistory() {
                       variant="outline"
                       className={cn(
                         "w-full justify-start text-left font-normal",
-                         "text-muted-foreground"
+                        "text-muted-foreground"
                       )}
-                      // disabled={fetchLoading}
+                    // disabled={fetchLoading}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {endDate ? `${format(endDate, "do MMM yyyy")}` : "Select date"}
@@ -465,7 +467,7 @@ function PaymentHistory() {
             </div>
 
             {/* Start Date Picker */}
-              <div className="space-y-2">
+            <div className="space-y-2">
               <label htmlFor="paymentDate" className="text-sm font-medium">
                 Payment Date
               </label>
@@ -553,6 +555,9 @@ function PaymentHistory() {
           </div>
         </CardContent>
       </Card>
+      <div className="mt-4 flex justify-end">
+        <Button onClick={() => router.back()}>Back</Button>
+      </div>
     </div>
   )
 }

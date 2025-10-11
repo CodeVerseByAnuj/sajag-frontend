@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Download, Plus } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 import { getItems } from '@/services/itemService';
 import { GetItemResponse, GetItemParams } from '@/interface/itemImterface';
@@ -23,6 +24,7 @@ import { DataTableViewOptions } from '../data-table/data-table-view-options';
 import { useSearchParams } from 'next/navigation';
 
 export default function GetItems() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const customerId = searchParams.get('customerId') || '';
   const [pagination, setPagination] = useState({ page: 1, limit: 5 });
@@ -158,6 +160,9 @@ export default function GetItems() {
           <DataTablePagination table={table} />
         </CardContent>
       </Card>
+      <div className="mt-4 flex justify-end">
+        <Button onClick={() => router.back()}>Back</Button>
+      </div>
     </div>
   );
 }
