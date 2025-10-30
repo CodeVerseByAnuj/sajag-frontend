@@ -2,9 +2,11 @@
 
 import { useState } from "react";
 
-import { BadgeCheck, Bell, CreditCard, LogOut } from "lucide-react";
-import api from "@/config/axiosConfig";
 import { useRouter } from "next/navigation";
+
+import { BadgeCheck, Bell, CreditCard, LogOut } from "lucide-react";
+import { toast } from "sonner";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,8 +17,8 @@ import {
   DropdownMenuTrigger,
   DropdownMenuGroup,
 } from "@/components/ui/dropdown-menu";
+import api from "@/config/axiosConfig";
 import { cn, getInitials } from "@/lib/utils";
-import { toast } from "sonner";
 
 export function AccountSwitcher({
   users,

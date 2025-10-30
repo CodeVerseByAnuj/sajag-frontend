@@ -1,7 +1,9 @@
 "use client";
 
-import { Settings, CircleHelp, Search, Database, ClipboardList, File, Command } from "lucide-react";
-import { Gem } from "lucide-react";
+import Link from "next/link";
+
+import { Settings, CircleHelp, Search, Database, ClipboardList, File, Command, Gem } from "lucide-react";
+
 import {
   Sidebar,
   SidebarContent,
@@ -14,7 +16,6 @@ import {
 import { APP_CONFIG } from "@/config/app-config";
 import { rootUser } from "@/data/users";
 import { sidebarItems } from "@/navigation/sidebar/sidebar-items";
-import Link from "next/link";
 
 import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
@@ -64,7 +65,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
               <Link href="/">
-                  <Gem className="size-10" />
+                <Gem className="size-10" />
                 <span className="text-base font-semibold">{APP_CONFIG.name}</span>
               </Link>
             </SidebarMenuButton>

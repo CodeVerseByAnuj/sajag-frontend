@@ -14,11 +14,11 @@ api.interceptors.response.use(
     if (
       error.response?.status === 401 ||
       (error.response?.status === 403 &&
-  !originalRequest.retry &&
+        !originalRequest.retry &&
         typeof window !== "undefined" &&
         localStorage.getItem("isLoggedIn") === "true")
     ) {
-  originalRequest.retry = true;
+      originalRequest.retry = true;
 
       try {
         // Just call the refresh endpoint — no tokens passed in body or headers

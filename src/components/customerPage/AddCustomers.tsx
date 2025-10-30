@@ -1,63 +1,44 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { toast } from 'sonner';
+import { useEffect } from "react";
+
+import { useSearchParams, useRouter } from "next/navigation";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
 // Interfaces & Services
-import { AddCustomerResponseInterface } from '@/interface/customerInterface';
-import { addOrUpdateCustomer, getCustomerById } from '@/services/customerService';
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { AddCustomerResponseInterface } from "@/interface/customerInterface";
+import { addOrUpdateCustomer, getCustomerById } from "@/services/customerService";
 
 // UI Components
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Card } from '@/components/ui/card';
 
 // Zod Schema
 const customerDataSchema = z.object({
   customerId: z.string().optional(),
-  name: z.string().min(1, 'Name is required'),
-  guardianName: z.string().min(1, 'Guardian name is required'),
-  relation: z.enum([
-    'father',
-    'mother',
-    'wife',
-    'husband',
-    'son',
-    'daughter',
-    'other',
-  ]),
-  address: z.string().min(1, 'Address is required'),
+  name: z.string().min(1, "Name is required"),
+  guardianName: z.string().min(1, "Guardian name is required"),
+  relation: z.enum(["father", "mother", "wife", "husband", "son", "daughter", "other"]),
+  address: z.string().min(1, "Address is required"),
   aadharNumber: z
     .string()
     .optional()
     .refine((val) => !val || /^\d{12}$/.test(val), {
-      message: 'Aadhar number must be 12 digits',
+      message: "Aadhar number must be 12 digits",
     }),
   mobileNumber: z
     .string()
     .optional()
     .refine((val) => !val || /^\d{0,10}$/.test(val), {
-      message: 'Enter up to 10 digits',
+      message: "Enter up to 10 digits",
     }),
 });
 
@@ -71,66 +52,66 @@ type AddCustomersFormProps = {
 export function AddCustomersForm({ defaultValues, onSubmit }: AddCustomersFormProps) {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const customerId = searchParams.get('customerId');
+  const customerId = searchParams.get("customerId");
 
   const form = useForm<CustomerFormValues>({
     resolver: zodResolver(customerDataSchema),
-    defaultValues: defaultValues || {
-      customerId: customerId || '',
-      name: '',
-      guardianName: '',
-      relation: 'father',
-      address: '',
-      aadharNumber: '',
-      mobileNumber: '',
+    defaultValues: defaultValues ?? {
+      customerId: customerId ?? "",
+      name: "",
+      guardianName: "",
+      relation: "father",
+      address: "",
+      aadharNumber: "",
+      mobileNumber: "",
     },
   });
 
   // Submit Handler
   const handleSubmit = async (data: CustomerFormValues) => {
     try {
-      const customerInput = { ...data, customerId: data.customerId ?? '' };
+      const customerInput = { ...data, customerId: data.customerId ?? "" };
 
-      const response: AddCustomerResponseInterface =
-        await addOrUpdateCustomer(customerInput);
+      const response: AddCustomerResponseInterface = await addOrUpdateCustomer(customerInput);
 
       if (response.success) {
         getCustomer();
         toast.success(response.message, {
           description: `Customer ID: ${response.data.customerId}`,
         });
-        router.push('/dashboard/customers');
+        router.push("/dashboard/customers");
         form.reset();
       }
     } catch (error: any) {
-      toast.error('Submission Failed', {
+      toast.error("Submission Failed", {
         description: error.message,
       });
     }
   };
 
   // Fetch Customer by ID
+  // eslint-disable-next-line complexity
   const getCustomer = async () => {
     if (!customerId) return;
     try {
       const res = await getCustomerById(customerId);
       if (res) {
         const values: CustomerFormValues = {
-          customerId: customerId || '',
-          name: res.name || '',
-          guardianName: res.guardianName || '',
-          relation: (res.relation as CustomerFormValues['relation']) || 'father',
-          address: res.address || '',
-          aadharNumber: res.aadharNumber || '',
-          mobileNumber: res.mobileNumber || '',
+          customerId: customerId ?? "",
+          name: res.name ?? "",
+          guardianName: res.guardianName ?? "",
+          relation: (res.relation as CustomerFormValues["relation"]) ?? "father",
+          address: res.address ?? "",
+          aadharNumber: res.aadharNumber ?? "",
+          mobileNumber: res.mobileNumber ?? "",
         };
         form.reset(values);
-        console.log('🚀 Form values after reset:', values);
+        console.log("🚀 Form values after reset:", values);
       } else {
-        toast.error('Customer not found');
+        toast.error("Customer not found");
       }
     } catch (error: any) {
-      toast.error('Failed to load customer', {
+      toast.error("Failed to load customer", {
         description: error.message,
       });
     }
@@ -141,16 +122,11 @@ export function AddCustomersForm({ defaultValues, onSubmit }: AddCustomersFormPr
   }, [customerId]);
 
   return (
-    <Card className="p-6 max-w-3xl mx-auto shadow-lg">
-      <h2 className="text-xl font-semibold mb-6 text-center">
-        {customerId ? 'Update Customer' : 'Add New Customer'}
-      </h2>
+    <Card className="mx-auto max-w-3xl p-6 shadow-lg">
+      <h2 className="mb-6 text-center text-xl font-semibold">{customerId ? "Update Customer" : "Add New Customer"}</h2>
 
       <Form {...form}>
-        <form
-          onSubmit={form.handleSubmit(handleSubmit)}
-          className="grid grid-cols-1 sm:grid-cols-2 gap-6"
-        >
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           {/* Full Name */}
           <FormField
             control={form.control}
@@ -221,13 +197,11 @@ export function AddCustomersForm({ defaultValues, onSubmit }: AddCustomersFormPr
             name="address"
             render={({ field }) => (
               <FormItem className="col-span-full">
-                <FormLabel>Address <span className="text-red-500">*</span></FormLabel>
+                <FormLabel>
+                  Address <span className="text-red-500">*</span>
+                </FormLabel>
                 <FormControl>
-                  <Textarea
-                    placeholder="123 Main Street, City, State"
-                    rows={3}
-                    {...field}
-                  />
+                  <Textarea placeholder="123 Main Street, City, State" rows={3} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -251,7 +225,7 @@ export function AddCustomersForm({ defaultValues, onSubmit }: AddCustomersFormPr
                     pattern="\d*"
                     onInput={(e) => {
                       const input = e.target as HTMLInputElement;
-                      input.value = input.value.replace(/\D/g, '').slice(0, 12);
+                      input.value = input.value.replace(/\D/g, "").slice(0, 12);
                     }}
                   />
                 </FormControl>
@@ -273,12 +247,12 @@ export function AddCustomersForm({ defaultValues, onSubmit }: AddCustomersFormPr
                     maxLength={10}
                     placeholder="9876543210"
                     {...field}
-                    name='mobileNumber'
+                    name="mobileNumber"
                     inputMode="numeric"
                     pattern="\d*"
                     onInput={(e) => {
                       const input = e.target as HTMLInputElement;
-                      input.value = input.value.replace(/\D/g, '').slice(0, 10);
+                      input.value = input.value.replace(/\D/g, "").slice(0, 10);
                     }}
                   />
                 </FormControl>
@@ -289,16 +263,10 @@ export function AddCustomersForm({ defaultValues, onSubmit }: AddCustomersFormPr
 
           {/* Buttons */}
           <div className="col-span-full flex justify-end gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => router.push('/dashboard/customers')}
-            >
+            <Button type="button" variant="outline" onClick={() => router.push("/dashboard/customers")}>
               Back
             </Button>
-            <Button type="submit">
-              {customerId ? 'Update Customer' : 'Add Customer'}
-            </Button>
+            <Button type="submit">{customerId ? "Update Customer" : "Add Customer"}</Button>
           </div>
         </form>
       </Form>

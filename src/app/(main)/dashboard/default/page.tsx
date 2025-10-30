@@ -1,8 +1,8 @@
 import { ChartAreaInteractiveDynamic } from "./_components/chart-area-interactive";
+import ChartTooltipDefault from "./_components/chart-tooltip-default";
 import { DataTable } from "./_components/data-table";
 import data from "./_components/data.json";
 import { SectionCards } from "./_components/section-cards";
-import ChartTooltipDefault from "./_components/chart-tooltip-default";
 
 export default function Page() {
   return (

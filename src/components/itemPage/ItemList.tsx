@@ -1,37 +1,35 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
-  getPaginationRowModel,
-} from '@tanstack/react-table';
-import { useQuery } from '@tanstack/react-query';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
-import { Download, Plus } from 'lucide-react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from "react";
 
-import { getItems } from '@/services/itemService';
-import { GetItemResponse, GetItemParams } from '@/interface/itemImterface';
-import { itemColumns } from './childComponent/ItemColumns';
-import { DataTable } from '../data-table/data-table';
-import { DataTablePagination } from '../data-table/data-table-pagination';
-import { DataTableViewOptions } from '../data-table/data-table-view-options';
-import { useSearchParams } from 'next/navigation';
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+
+import { useQuery } from "@tanstack/react-query";
+import { useReactTable, getCoreRowModel, getSortedRowModel, getPaginationRowModel } from "@tanstack/react-table";
+import { Download, Plus } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { GetItemResponse, GetItemParams } from "@/interface/itemImterface";
+import { getItems } from "@/services/itemService";
+
+import { DataTable } from "../data-table/data-table";
+import { DataTablePagination } from "../data-table/data-table-pagination";
+import { DataTableViewOptions } from "../data-table/data-table-view-options";
+
+import { itemColumns } from "./childComponent/ItemColumns";
 
 export default function GetItems() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const customerId = searchParams.get('customerId') || '';
+  const customerId = searchParams.get("customerId") ?? "";
   const [pagination, setPagination] = useState({ page: 1, limit: 5 });
-  const [filters, setFilters] = useState({ name: '', category: '' });
-  const [sorting, setSorting] = useState<{ sortBy: string; sortOrder: 'asc' | 'desc' }>({
-    sortBy: 'createdAt',
-    sortOrder: 'desc',
+  const [filters, setFilters] = useState({ name: "", category: "" });
+  const [sorting, setSorting] = useState<{ sortBy: string; sortOrder: "asc" | "desc" }>({
+    sortBy: "createdAt",
+    sortOrder: "desc",
   });
 
   const queryParams: GetItemParams = {
@@ -42,13 +40,13 @@ export default function GetItems() {
   };
 
   const { data, isLoading, refetch } = useQuery<GetItemResponse>({
-    queryKey: ['items', queryParams],
+    queryKey: ["items", queryParams],
     queryFn: () => getItems(queryParams),
   });
 
-  const items = data?.data || [];
-  const total = data?.total || 0;
-  const limit = data?.limit || 5;
+  const items = data?.data ?? [];
+  const total = data?.total ?? 0;
+  const limit = data?.limit ?? 5;
   const totalPages = Math.ceil(total / limit);
 
   const table = useReactTable({
@@ -68,23 +66,24 @@ export default function GetItems() {
       sorting: [
         {
           id: sorting.sortBy,
-          desc: sorting.sortOrder === 'desc',
+          desc: sorting.sortOrder === "desc",
         },
       ],
     },
     onPaginationChange: (updater) => {
-      const next = typeof updater === 'function'
-        ? updater({ pageIndex: pagination.page - 1, pageSize: pagination.limit })
-        : updater;
+      const next =
+        typeof updater === "function"
+          ? updater({ pageIndex: pagination.page - 1, pageSize: pagination.limit })
+          : updater;
 
       setPagination({ page: next.pageIndex + 1, limit: next.pageSize });
     },
     onSortingChange: (updater) => {
-      const nextSorting = typeof updater === 'function' ? updater([]) : updater;
+      const nextSorting = typeof updater === "function" ? updater([]) : updater;
       if (nextSorting.length > 0) {
         setSorting({
           sortBy: nextSorting[0].id,
-          sortOrder: nextSorting[0].desc ? 'desc' : 'asc',
+          sortOrder: nextSorting[0].desc ? "desc" : "asc",
         });
       }
     },
@@ -99,13 +98,13 @@ export default function GetItems() {
     setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
-  console.log('Items:', items);
+  console.log("Items:", items);
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className="flex min-h-[400px] items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4"></div>
+          <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-b-2 border-gray-900"></div>
           <p className="text-gray-600">Loading items...</p>
         </div>
       </div>
@@ -116,7 +115,7 @@ export default function GetItems() {
     <div>
       <Card>
         <CardHeader>
-          <section className='flex justify-between'>
+          <section className="flex justify-between">
             <div>
               <CardTitle>Items</CardTitle>
               <CardDescription>Manage and search your inventory items.</CardDescription>
@@ -129,13 +128,8 @@ export default function GetItems() {
             </Button>
           </section>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-            <Input
-              name="name"
-              placeholder="Search by Item Name"
-              value={filters.name}
-              onChange={handleInputChange}
-            />
+          <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <Input name="name" placeholder="Search by Item Name" value={filters.name} onChange={handleInputChange} />
             <Input
               name="category"
               placeholder="Search by Category"
@@ -147,7 +141,7 @@ export default function GetItems() {
           <div className="mt-4 flex items-center gap-2">
             <DataTableViewOptions table={table} />
             <Button variant="outline" size="sm">
-              <Download className="h-4 w-4 mr-2" />
+              <Download className="mr-2 h-4 w-4" />
               <span className="hidden lg:inline">Export</span>
             </Button>
           </div>

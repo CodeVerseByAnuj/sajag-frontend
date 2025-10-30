@@ -1,14 +1,16 @@
 "use client";
 
 import * as React from "react";
+
+import { useQuery } from "@tanstack/react-query";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
-import { getDailyAggregates } from "@/services/dashboardServices";
+
 import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useQuery } from "@tanstack/react-query";
+import { getDailyAggregates } from "@/services/dashboardServices";
 
 export const description = "An interactive area chart with dynamic data";
 
@@ -32,6 +34,7 @@ type ChartDataItem = {
   interestPaid: number;
 };
 
+// eslint-disable-next-line complexity
 export function ChartAreaInteractiveDynamic() {
   const isMobile = useIsMobile();
   const [timeRange, setTimeRange] = React.useState("30d");
@@ -48,17 +51,20 @@ export function ChartAreaInteractiveDynamic() {
   }, [isMobile]);
 
   // Transform API data to chart format
+  // eslint-disable-next-line complexity
   const chartData = React.useMemo(() => {
     if (!data?.labels || !data?.datasets) return [];
 
     const labels = data.labels;
-    const totalPaidData = data.datasets.find((ds: { label: string; data: number[] }) => ds.label === "Total Paid")?.data || [];
-    const interestPaidData = data.datasets.find((ds: { label: string; data: number[] }) => ds.label === "Interest Paid")?.data || [];
+    const totalPaidData =
+      data.datasets.find((ds: { label: string; data: number[] }) => ds.label === "Total Paid")?.data ?? [];
+    const interestPaidData =
+      data.datasets.find((ds: { label: string; data: number[] }) => ds.label === "Interest Paid")?.data ?? [];
 
     return labels.map((date: string, index: number) => ({
       date,
-      totalPaid: totalPaidData[index] || 0,
-      interestPaid: interestPaidData[index] || 0,
+      totalPaid: totalPaidData[index] ?? 0,
+      interestPaid: interestPaidData[index] ?? 0,
     }));
   }, [data]);
 
@@ -68,7 +74,7 @@ export function ChartAreaInteractiveDynamic() {
 
     const now = new Date();
     let daysToSubtract = 30;
-    
+
     if (timeRange === "15d") {
       daysToSubtract = 15;
     } else if (timeRange === "7d") {
@@ -93,7 +99,9 @@ export function ChartAreaInteractiveDynamic() {
 
   const formatCurrency = (value: number) => {
     try {
-      return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 2 }).format(value);
+      return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 2 }).format(
+        value,
+      );
     } catch {
       return `₹${value.toFixed(2)}`;
     }
@@ -124,9 +132,7 @@ export function ChartAreaInteractiveDynamic() {
         </CardHeader>
         <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
           <div className="flex h-[250px] w-full items-center justify-center">
-            <div className="text-destructive">
-              Failed to load chart data. {error?.message || "Please try again."}
-            </div>
+            <div className="text-destructive">Failed to load chart data. {error?.message ?? "Please try again."}</div>
           </div>
         </CardContent>
       </Card>
@@ -136,7 +142,7 @@ export function ChartAreaInteractiveDynamic() {
   return (
     <Card className="@container/card">
       <CardHeader>
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between w-full gap-2">
+        <div className="flex w-full flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <CardTitle>Total Visitors</CardTitle>
             <CardDescription>
@@ -162,9 +168,9 @@ export function ChartAreaInteractiveDynamic() {
             <ToggleGroupItem value="7d">Last 7 days</ToggleGroupItem>
           </ToggleGroup>
           <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger 
-              className="flex w-40 **:data-[slot=select-value]:block **:data-[slot=select-value]:truncate @[767px]/card:hidden" 
-              size="sm" 
+            <SelectTrigger
+              className="flex w-40 **:data-[slot=select-value]:block **:data-[slot=select-value]:truncate @[767px]/card:hidden"
+              size="sm"
               aria-label="Select a value"
             >
               <SelectValue placeholder="Last 30 days" />
@@ -231,19 +237,19 @@ export function ChartAreaInteractiveDynamic() {
                   />
                 }
               />
-              <Area 
-                dataKey="interestPaid" 
-                type="natural" 
-                fill="url(#fillInterestPaid)" 
-                stroke="var(--color-interestPaid)" 
-                stackId="a" 
+              <Area
+                dataKey="interestPaid"
+                type="natural"
+                fill="url(#fillInterestPaid)"
+                stroke="var(--color-interestPaid)"
+                stackId="a"
               />
-              <Area 
-                dataKey="totalPaid" 
-                type="natural" 
-                fill="url(#fillTotalPaid)" 
-                stroke="var(--color-totalPaid)" 
-                stackId="a" 
+              <Area
+                dataKey="totalPaid"
+                type="natural"
+                fill="url(#fillTotalPaid)"
+                stroke="var(--color-totalPaid)"
+                stackId="a"
               />
             </AreaChart>
           </ChartContainer>

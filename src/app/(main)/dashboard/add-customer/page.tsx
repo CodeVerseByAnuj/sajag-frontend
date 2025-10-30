@@ -1,11 +1,7 @@
-import { AddCustomersForm } from "@/components/customerPage/AddCustomers"
+import { AddCustomersForm } from "@/components/customerPage/AddCustomers";
 
 function page() {
-    return (
-        <>
-            <AddCustomersForm/>
-        </>
-    )
+  return <AddCustomersForm />;
 }
 
-export default page
+export default page;

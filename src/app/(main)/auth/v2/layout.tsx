@@ -1,5 +1,7 @@
 import { ReactNode } from "react";
+
 import { Gem } from "lucide-react";
+
 import { Separator } from "@/components/ui/separator";
 import { APP_CONFIG } from "@/config/app-config";
 
@@ -22,9 +24,7 @@ export default function Layout({ children }: Readonly<{ children: ReactNode }>) 
             <Separator orientation="vertical" className="mx-3 !h-auto" />
             <div className="text-primary-foreground flex-1 space-y-1">
               <h2 className="font-medium">Madad chahiye?</h2>
-              <p className="text-sm">
-                Documentation padhein ya humein contact karein — hum hamesha aapke saath hain.
-              </p>
+              <p className="text-sm">Documentation padhein ya humein contact karein — hum hamesha aapke saath hain.</p>
             </div>
           </div>
         </div>

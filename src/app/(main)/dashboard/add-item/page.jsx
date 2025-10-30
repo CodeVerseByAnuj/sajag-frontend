@@ -1,11 +1,7 @@
-import AddOrUpdateItemForm from "@/components/itemPage/AddUpdateItem"
+import AddOrUpdateItemForm from "@/components/itemPage/AddUpdateItem";
 
 function page() {
-  return (
-    <>
-      <AddOrUpdateItemForm />
-    </>
-  )
+  return <AddOrUpdateItemForm />;
 }
 
-export default page
+export default page;

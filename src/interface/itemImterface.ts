@@ -18,7 +18,7 @@ export interface GetItemParams {
   name?: string;
   category?: string;
   sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+  sortOrder?: "asc" | "desc";
 }
 
 export interface GetItemResponse {
@@ -42,21 +42,21 @@ export interface ItemInterface {
 }
 
 export interface AddItemInput {
-  itemId?: string;         // Optional for update
-  customerId: string;      // Required
+  itemId?: string; // Optional for update
+  customerId: string; // Required
   name: string;
   itemWeight: string;
-  category: 'gold' | 'silver';
+  category: "gold" | "silver";
   percentage: number;
   amount: number;
   description?: string;
-  orderId?: string;        // Optional: auto-create if blank
+  orderId?: string; // Optional: auto-create if blank
 }
 
 export interface AddItemResponse {
   success: boolean;
   message: string;
   data: {
-    itemId: { itemId: string }
+    itemId: { itemId: string };
   };
 }

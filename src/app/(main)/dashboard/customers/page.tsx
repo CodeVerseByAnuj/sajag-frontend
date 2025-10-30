@@ -1,11 +1,7 @@
-import GetCustomers from "@/components/customerPage/GetCustomers"
+import GetCustomers from "@/components/customerPage/GetCustomers";
 
 function page() {
-    return (
-        <>
-            <GetCustomers />
-        </>
-    )
+  return <GetCustomers />;
 }
 
-export default page
+export default page;

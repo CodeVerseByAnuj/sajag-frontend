@@ -53,7 +53,7 @@ export const sidebarItems: NavGroup[] = [
         url: "/dashboard/default",
         icon: ChartBar,
       },
-       {
+      {
         title: "Customers",
         url: "/dashboard/customers",
         icon: LayoutDashboard,

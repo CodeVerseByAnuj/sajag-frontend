@@ -2,6 +2,7 @@ import { FlatCompat } from "@eslint/eslintrc";
 import pluginJs from "@eslint/js";
 import pluginImport from "eslint-plugin-import";
 import pluginReact from "eslint-plugin-react";
+import pluginNext from "eslint-plugin-next";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 import securityPlugin from "eslint-plugin-security";
@@ -36,6 +37,7 @@ export default [
       prettier: prettier,
       unicorn: unicorn,
       react: pluginReact,
+      next: pluginNext,
       sonarjs: sonarjs,
     },
   },
@@ -50,8 +52,9 @@ export default [
       "prettier/prettier": "warn",
 
       // File Naming
+      // Relax filename case enforcement to a warning to avoid mass file renames
       "unicorn/filename-case": [
-        "error",
+        "warn",
         {
           case: "kebabCase",
           ignore: ["^.*\\.config\\.(js|ts|mjs)$", "^.*\\.d\\.ts$"],

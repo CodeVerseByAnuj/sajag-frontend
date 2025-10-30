@@ -1,18 +1,13 @@
 "use client";
 
-import { TrendingUp, TrendingDown } from "lucide-react";
-import { getDashboardStats } from "@/services/dashboardServices";
 import { useQuery } from "@tanstack/react-query";
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardAction,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { TrendingUp, TrendingDown } from "lucide-react";
 
+import { Badge } from "@/components/ui/badge";
+import { Card, CardAction, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { getDashboardStats } from "@/services/dashboardServices";
+
+// eslint-disable-next-line complexity
 export function SectionCards() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["dashboardStats"],
@@ -50,9 +45,7 @@ export function SectionCards() {
             <Card key={field.key} className="@container/card">
               <CardHeader>
                 <CardDescription>{field.label}</CardDescription>
-                <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
-                  {value}
-                </CardTitle>
+                <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">{value}</CardTitle>
 
                 {hasChange && (
                   <CardAction>
@@ -67,15 +60,11 @@ export function SectionCards() {
               {hasChange && (
                 <CardFooter className="flex-col items-start gap-1.5 text-sm">
                   <div className="line-clamp-1 flex gap-2 font-medium">
-                    {isUp
-                      ? `Trending up by ${change}% this month`
-                      : `Down ${Math.abs(change)}% this period`}
+                    {isUp ? `Trending up by ${change}% this month` : `Down ${Math.abs(change)}% this period`}
                     <TrendIcon className="size-4" />
                   </div>
                   <div className="text-muted-foreground">
-                    {isUp
-                      ? "Growth is consistent and improving"
-                      : "Needs review and optimization"}
+                    {isUp ? "Growth is consistent and improving" : "Needs review and optimization"}
                   </div>
                 </CardFooter>
               )}

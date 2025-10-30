@@ -1,13 +1,12 @@
 import api from "@/config/axiosConfig";
-import { 
-  GetPaymentResponse, 
-  AddPaymentInput, 
-  AddPaymentResponse, 
+import {
+  GetPaymentResponse,
+  AddPaymentInput,
+  AddPaymentResponse,
   GetPaymentHistoryParams,
   PaymentHistoryResponse,
   CalculateInterestRequest,
   CalculateInterestResponse,
-  
 } from "@/interface/paymentInterface";
 
 /**
@@ -20,10 +19,10 @@ export const getPaymentDetails = async (customerId: string): Promise<GetPaymentR
     return {
       success: true,
       message: "Payment details fetched successfully",
-      data: response.data.data
+      data: response.data.data,
     };
   } catch (error: any) {
-    const msg = error?.response?.data?.message || "Failed to fetch payment details.";
+    const msg = error?.response?.data?.message ?? "Failed to fetch payment details.";
     throw new Error(msg);
   }
 };
@@ -37,11 +36,11 @@ export const addPayment = async (paymentData: AddPaymentInput): Promise<AddPayme
     const response = await api.post("/api/payment/add-payment", paymentData);
     return {
       success: true,
-      message: response.data?.message || "Payment added successfully",
-      data: response.data?.data
+      message: response.data?.message ?? "Payment added successfully",
+      data: response.data?.data,
     };
   } catch (error: any) {
-    const msg = error?.response?.data?.message || "Failed to add payment.";
+    const msg = error?.response?.data?.message ?? "Failed to add payment.";
     throw new Error(msg);
   }
 };
@@ -50,12 +49,10 @@ export const addPayment = async (paymentData: AddPaymentInput): Promise<AddPayme
  * Get payment history for a specific item or customer
  * @param params Query parameters to filter payment history
  */
-export const getPaymentHistory = async (
-  params: GetPaymentHistoryParams
-): Promise<PaymentHistoryResponse> => {
+export const getPaymentHistory = async (params: GetPaymentHistoryParams): Promise<PaymentHistoryResponse> => {
   try {
     const response = await api.get("/api/payment/payment", { params });
-    
+
     return {
       success: true,
       message: "Payment history fetched successfully",
@@ -63,11 +60,11 @@ export const getPaymentHistory = async (
         payments: response.data.data.payments,
         page: response.data.data.page,
         limit: response.data.data.limit,
-        total: response.data.data.total
-      }
+        total: response.data.data.total,
+      },
     };
   } catch (error: any) {
-    const msg = error?.response?.data?.message || "Failed to fetch payment history.";
+    const msg = error?.response?.data?.message ?? "Failed to fetch payment history.";
     throw new Error(msg);
   }
 };
@@ -80,14 +77,14 @@ export const getPaymentHistoryByItemId = async (itemId: string): Promise<Payment
   try {
     const response = await api.get(`/api/payment/payment/${itemId}`);
     console.log(response.data);
-    
+
     return {
       success: true,
       message: "Payment history fetched successfully",
-      data: response.data
+      data: response.data,
     };
   } catch (error: any) {
-    const msg = error?.response?.data?.message || "Failed to fetch payment history.";
+    const msg = error?.response?.data?.message ?? "Failed to fetch payment history.";
     throw new Error(msg);
   }
 };
@@ -100,7 +97,7 @@ export const deletePayment = async (paymentId: string): Promise<void> => {
   try {
     await api.delete(`/api/payment/delete-payment/${paymentId}`);
   } catch (error: any) {
-    const msg = error?.response?.data?.message || "Failed to delete payment.";
+    const msg = error?.response?.data?.message ?? "Failed to delete payment.";
     throw new Error(msg);
   }
 };
@@ -109,23 +106,22 @@ export const deletePayment = async (paymentId: string): Promise<void> => {
  * Calculate interest based on amount, dates, and percentage
  * @param data The calculation parameters
  */
-export const calculateInterest = async (
-  data: CalculateInterestRequest
-): Promise<CalculateInterestResponse> => {
+// eslint-disable-next-line complexity
+export const calculateInterest = async (data: CalculateInterestRequest): Promise<CalculateInterestResponse> => {
   try {
     const response = await api.post("/api/payment/calculate-interest", data);
     console.log("API response:", response.data);
     return {
       success: true,
       message: "Interest calculated successfully",
-      data: response.data.data
+      data: response.data.data,
     };
   } catch (error: any) {
     console.error("Calculate interest API error:", error);
-    console.error("Response data:", error?.response?.data || error?.response?.data.error);
+    console.error("Response data:", error?.response?.data ?? error?.response?.data?.error);
     console.error("Status:", error?.response?.status);
-    
-    const msg = error?.response?.data?.message || "Failed to calculate interest.";
+
+    const msg = error?.response?.data?.message ?? "Failed to calculate interest.";
     throw new Error(msg);
   }
 };
@@ -135,11 +131,11 @@ export const payment = async (paymentData: any): Promise<AddPaymentResponse> => 
     const response = await api.post("/api/payment/payment", paymentData);
     return {
       success: true,
-      message: response.data?.message || "Payment added successfully",
-      data: response.data?.data
+      message: response.data?.message ?? "Payment added successfully",
+      data: response.data?.data,
     };
   } catch (error: any) {
-    const msg = error?.response?.data?.message || "Failed to add payment.";
+    const msg = error?.response?.data?.message ?? "Failed to add payment.";
     throw new Error(msg);
   }
 };

@@ -1,5 +1,3 @@
-import { addPayment } from "@/services/paymentService";
-
 export interface PaymentCurrentStatus {
   originalAmount: number;
   remainingAmount: number;
@@ -20,7 +18,7 @@ export interface Payment {
   interestAmount?: number;
   principalAmount?: number;
   paymentDate: string;
-  paymentType?: 'interest' | 'principal' | 'both';
+  paymentType?: "interest" | "principal" | "both";
   notes?: string;
   createdAt?: string;
   updatedAt?: string;
@@ -42,7 +40,7 @@ export interface GetPaymentResponse {
 export interface AddPaymentInput {
   itemId: string;
   amount: number;
-  paymentType: 'interest' | 'principal' | 'both';
+  paymentType: "interest" | "principal" | "both";
   paymentDate: string;
   notes?: string;
 }
@@ -64,7 +62,7 @@ export interface GetPaymentHistoryParams {
   startDate?: string;
   endDate?: string;
   sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+  sortOrder?: "asc" | "desc";
 }
 
 export interface PaymentHistoryResponse {
@@ -103,7 +101,7 @@ export interface AddPaymentInput {
   itemId: string;
   interestAmount: number | null;
   principalAmount: number | null;
-  paymentDate: string ;
+  paymentDate: string;
 }
 
 export interface AddPaymentResponse {

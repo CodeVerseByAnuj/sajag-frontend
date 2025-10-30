@@ -1,58 +1,52 @@
-"use client"
+"use client";
 
-import React, { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { Calendar } from "@/components/ui/calendar"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  Calculator,
-  CalendarIcon,
-  IndianRupee,
-  RefreshCw,
-  AlertCircle,
-  Info
-} from "lucide-react"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { cn } from "@/lib/utils"
-import { format } from "date-fns"
-import { getPaymentDetails, calculateInterest, payment } from "@/services/paymentService"
-import { CalculateInterestResponse } from "@/interface/paymentInterface"
-import { useSearchParams } from 'next/navigation'
+import React, { useState, useEffect } from "react";
 
+import { useRouter, useSearchParams } from "next/navigation";
+
+import { format } from "date-fns";
+import { Calculator, CalendarIcon, IndianRupee, RefreshCw, AlertCircle, Info } from "lucide-react";
+
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { CalculateInterestResponse } from "@/interface/paymentInterface";
+import { cn } from "@/lib/utils";
+import { getPaymentDetails, calculateInterest, payment } from "@/services/paymentService";
+
+/* eslint-disable complexity, max-lines */
 function PaymentHistory() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const itemId = searchParams.get("itemId");
-  const [originalAmount, setOriginalAmount] = useState<string>("")
-  const [monthlyInterestRate, setMonthlyInterestRate] = useState<string>("2")
-  const [startDate, setStartDate] = useState<Date>(new Date())
-  const [endDate, setEndDate] = useState<Date>(new Date())
-  const [loading, setLoading] = useState<boolean>(false)
-  const [fetchLoading, setFetchLoading] = useState<boolean>(false)
-  const [error, setError] = useState<string | null>(null)
-  const [calculationResult, setCalculationResult] = useState<CalculateInterestResponse | null>(null)
-  const [paymentDate, setPaymentDate] = useState<Date | null>(new Date())
-  const [interestAmount, setInterestAmount] = useState<number | null>(null)
-  const [principalAmount, setPrincipalAmount] = useState<number | null>(null)
+  const [originalAmount, setOriginalAmount] = useState<string>("");
+  const [monthlyInterestRate, setMonthlyInterestRate] = useState<string>("2");
+  const [startDate, setStartDate] = useState<Date>(new Date());
+  const [endDate, setEndDate] = useState<Date>(new Date());
+  const [loading, setLoading] = useState<boolean>(false);
+  const [fetchLoading, setFetchLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [calculationResult, setCalculationResult] = useState<CalculateInterestResponse | null>(null);
+  const [paymentDate, setPaymentDate] = useState<Date | null>(new Date());
+  const [interestAmount, setInterestAmount] = useState<number | null>(null);
+  const [principalAmount, setPrincipalAmount] = useState<number | null>(null);
   const [summary, setSummary] = useState<{ totalPayments: number; totalInterest: number; totalPrincipal: number }>({
     totalPayments: 0,
     totalInterest: 0,
-    totalPrincipal: 0
+    totalPrincipal: 0,
   });
-  const [paymentHistory, setPaymentHistory] = useState<Array<{
-    paymentId: string | number;
-    paymentDate: string;
-    paymentAmount: string | number;
-    interestAmount: string | number;
-    principalAmount: string | number;
-  }>>([]);
+  const [paymentHistory, setPaymentHistory] = useState<
+    Array<{
+      paymentId: string | number;
+      paymentDate: string;
+      paymentAmount: string | number;
+      interestAmount: string | number;
+      principalAmount: string | number;
+    }>
+  >([]);
   console.log(paymentHistory, "paymentHistory");
 
   useEffect(() => {
@@ -77,6 +71,7 @@ function PaymentHistory() {
     }
   }, [startDate, endDate]);
 
+  // eslint-disable-next-line complexity
   const fetchPaymentDetails = async (id: string) => {
     setFetchLoading(true);
     setError(null);
@@ -85,20 +80,20 @@ function PaymentHistory() {
       const response = await getPaymentDetails(id);
       if (response.data?.currentStatus) {
         setSummary({
-          totalPayments: response.data.summary.totalAmountPaid || 0,
-          totalInterest: response.data.summary.totalInterestPaid || 0,
-          totalPrincipal: response.data.summary.totalPrincipalPaid || 0
+          totalPayments: response.data.summary.totalAmountPaid ?? 0,
+          totalInterest: response.data.summary.totalInterestPaid ?? 0,
+          totalPrincipal: response.data.summary.totalPrincipalPaid ?? 0,
         });
         setOriginalAmount(response.data.currentStatus.remainingAmount.toString());
         setPaymentHistory(
-          (response.data.payments || []).map((p: any) => ({
+          (response.data.payments ?? []).map((p: any) => ({
             paymentId: p.paymentId,
             paymentDate: p.paymentDate ?? "",
             paymentAmount: p.paymentAmount,
             interestAmount: p.interestAmount ?? "", // Add interestAmount property
             principalAmount: p.principalAmount ?? "", // Add principalAmount property
             interestRate: p.interestRate ?? "", // Add interestRate property
-          }))
+          })),
         );
         if (response.data.currentStatus.monthlyInterestRate) {
           setMonthlyInterestRate(response.data.currentStatus.monthlyInterestRate.toString());
@@ -108,8 +103,8 @@ function PaymentHistory() {
         }
       }
     } catch (err: any) {
-      console.error('Error fetching payment details:', err);
-      setError(err.message || 'Failed to fetch payment details');
+      console.error("Error fetching payment details:", err);
+      setError(err.message ?? "Failed to fetch payment details");
     } finally {
       setFetchLoading(false);
     }
@@ -118,7 +113,7 @@ function PaymentHistory() {
   const handleAddPayment = async () => {
     setLoading(true);
     setError(null);
-    console.log(paymentDate, '99');
+    console.log(paymentDate, "99");
     try {
       // Format paymentDate as 'YYYY-MM-DD' for API
       const formattedPaymentDate = paymentDate ? format(paymentDate, "yyyy-MM-dd") : "";
@@ -142,11 +137,11 @@ function PaymentHistory() {
         // setInterestAmount(null);
         // setPaymentDate(new Date());
       } else {
-        setError(response.message || 'Failed to add payment');
+        setError(response.message ?? "Failed to add payment");
       }
     } catch (err: any) {
-      console.error('Error adding payment:', err);
-      setError(err.message || 'Failed to add payment');
+      console.error("Error adding payment:", err);
+      setError(err.message ?? "Failed to add payment");
     } finally {
       setLoading(false);
     }
@@ -166,7 +161,7 @@ function PaymentHistory() {
         amount: parseFloat(originalAmount),
         startDate: formattedStartDate,
         endDate: formattedEndDate,
-        percentage: parseFloat(monthlyInterestRate)
+        percentage: parseFloat(monthlyInterestRate),
       };
 
       console.log("Sending calculation request:", requestData);
@@ -176,7 +171,7 @@ function PaymentHistory() {
       try {
         // First try the real API
         response = await calculateInterest(requestData);
-        console.log(response)
+        console.log(response);
         if (response.success) {
           setCalculationResult({ success: response.success, message: response.message ?? "", data: response.data });
           setPrincipalAmount(response.data.amount);
@@ -188,50 +183,43 @@ function PaymentHistory() {
         // Set warning instead of error
         setError("Using mock calculation - API not available. This is test data only.");
       }
-
     } catch (err: any) {
-      console.error('Error calculating interest:', err);
-      setError(err.message || 'Failed to calculate interest. Check console for details.');
+      console.error("Error calculating interest:", err);
+      setError(err.message ?? "Failed to calculate interest. Check console for details.");
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
     <div className="container mx-auto py-6">
-      <h1 className="text-2xl font-bold mb-6">Payment History</h1>
+      <h1 className="mb-6 text-2xl font-bold">Payment History</h1>
       {/* Summary */}
-      {
-        summary && (
-          <Card className="mb-6">
-            <CardHeader>
-              <CardTitle>Payment Summary</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex justify-between">
-                <span>Total Payments:</span>
-                <span>₹{summary.totalPrincipal}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Total Interest:</span>
-                <span>₹{summary.totalInterest}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Overall Total:</span>
-                <span>₹{summary.totalPayments}</span>
-              </div>
-            </CardContent>
-          </Card>
-        )
-      }
+      {summary && (
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Payment Summary</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex justify-between">
+              <span>Total Payments:</span>
+              <span>₹{summary.totalPrincipal}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Total Interest:</span>
+              <span>₹{summary.totalInterest}</span>
+            </div>
+            <div className="flex justify-between">
+              <span>Overall Total:</span>
+              <span>₹{summary.totalPayments}</span>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {error && (
         <Alert variant={error.includes("mock") ? "default" : "destructive"} className="mb-4">
-          {error.includes("mock") ? (
-            <Info className="h-4 w-4" />
-          ) : (
-            <AlertCircle className="h-4 w-4" />
-          )}
+          {error.includes("mock") ? <Info className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
@@ -243,18 +231,18 @@ function PaymentHistory() {
         <CardContent className="space-y-4">
           {fetchLoading ? (
             <div className="flex items-center justify-center py-6">
-              <RefreshCw className="h-6 w-6 animate-spin text-primary" />
+              <RefreshCw className="text-primary h-6 w-6 animate-spin" />
               <span className="ml-2">Loading payment details...</span>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
               {/* Original Amount Input */}
               <div className="space-y-2">
                 <label htmlFor="originalAmount" className="text-sm font-medium">
                   Original Amount
                 </label>
                 <div className="relative">
-                  <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <IndianRupee className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                   <Input
                     id="originalAmount"
                     type="number"
@@ -298,7 +286,7 @@ function PaymentHistory() {
                       variant="outline"
                       className={cn(
                         "w-full justify-start text-left font-normal",
-                        !startDate && "text-muted-foreground"
+                        !startDate && "text-muted-foreground",
                       )}
                       disabled={fetchLoading}
                     >
@@ -326,11 +314,8 @@ function PaymentHistory() {
                   <PopoverTrigger asChild>
                     <Button
                       variant="outline"
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        "text-muted-foreground"
-                      )}
-                    // disabled={fetchLoading}
+                      className={cn("w-full justify-start text-left font-normal", "text-muted-foreground")}
+                      // disabled={fetchLoading}
                     >
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {endDate ? `${format(endDate, "do MMM yyyy")}` : "Select date"}
@@ -373,51 +358,54 @@ function PaymentHistory() {
 
       {/* Payment calculation results */}
       {calculationResult ? (
-        <Card className='mb-6'>
+        <Card className="mb-6">
           <CardHeader>
             <CardTitle>Interest Calculation Results</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               <div className="space-y-2">
-                <h3 className="text-sm font-medium text-muted-foreground">Principal Amount</h3>
+                <h3 className="text-muted-foreground text-sm font-medium">Principal Amount</h3>
                 <p className="text-2xl font-semibold">₹{calculationResult.data.amount.toLocaleString()}</p>
               </div>
 
               <div className="space-y-2">
-                <h3 className="text-sm font-medium text-muted-foreground">Interest Rate</h3>
+                <h3 className="text-muted-foreground text-sm font-medium">Interest Rate</h3>
                 <p className="text-2xl font-semibold">{calculationResult.data.monthlyRate}%</p>
               </div>
 
               <div className="space-y-2">
-                <h3 className="text-sm font-medium text-muted-foreground">Duration</h3>
+                <h3 className="text-muted-foreground text-sm font-medium">Duration</h3>
                 <p className="text-2xl font-semibold">{calculationResult.data.daysCalculated} days</p>
               </div>
 
               <div className="space-y-2">
-                <h3 className="text-sm font-medium text-muted-foreground">Interest Amount</h3>
-                <p className="text-2xl font-semibold text-amber-600">₹{calculationResult.data.interest.toLocaleString()}</p>
+                <h3 className="text-muted-foreground text-sm font-medium">Interest Amount</h3>
+                <p className="text-2xl font-semibold text-amber-600">
+                  ₹{calculationResult.data.interest.toLocaleString()}
+                </p>
               </div>
 
               <div className="space-y-2">
-                <h3 className="text-sm font-medium text-muted-foreground">Total Amount</h3>
-                <p className="text-2xl font-semibold text-primary">₹{calculationResult.data.totalAmount.toLocaleString()}</p>
+                <h3 className="text-muted-foreground text-sm font-medium">Total Amount</h3>
+                <p className="text-primary text-2xl font-semibold">
+                  ₹{calculationResult.data.totalAmount.toLocaleString()}
+                </p>
               </div>
 
               <div className="space-y-2">
-                <h3 className="text-sm font-medium text-muted-foreground">Period</h3>
+                <h3 className="text-muted-foreground text-sm font-medium">Period</h3>
                 <p className="text-base">
-                  {format(new Date(calculationResult.data.startDate), "dd MMM yyyy")} to {format(new Date(calculationResult.data.endDate), "dd MMM yyyy")}
+                  {format(new Date(calculationResult.data.startDate), "dd MMM yyyy")} to{" "}
+                  {format(new Date(calculationResult.data.endDate), "dd MMM yyyy")}
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
       ) : (
-        <div className="bg-muted mb-6 p-6 rounded-lg text-center">
-          <p className="text-muted-foreground">
-            Enter values and click Calculate to see interest calculation results
-          </p>
+        <div className="bg-muted mb-6 rounded-lg p-6 text-center">
+          <p className="text-muted-foreground">Enter values and click Calculate to see interest calculation results</p>
         </div>
       )}
 
@@ -426,14 +414,14 @@ function PaymentHistory() {
           <CardTitle>Payment History</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
             {/* Original Amount Input */}
             <div className="space-y-2">
               <label htmlFor="originalAmount" className="text-sm font-medium">
                 principal Amount
               </label>
               <div className="relative">
-                <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <IndianRupee className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                 <Input
                   id="principalAmount"
                   type="number"
@@ -477,7 +465,7 @@ function PaymentHistory() {
                     variant="outline"
                     className={cn(
                       "w-full justify-start text-left font-normal",
-                      !paymentDate && "text-muted-foreground"
+                      !paymentDate && "text-muted-foreground",
                     )}
                     disabled={fetchLoading}
                   >
@@ -498,11 +486,7 @@ function PaymentHistory() {
           </div>
         </CardContent>
         <CardFooter>
-          <Button
-            onClick={handleAddPayment}
-            className="ml-auto"
-            disabled={fetchLoading || loading}
-          >
+          <Button onClick={handleAddPayment} className="ml-auto" disabled={fetchLoading || loading}>
             {loading ? (
               <>
                 <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
@@ -515,15 +499,15 @@ function PaymentHistory() {
         </CardFooter>
       </Card>
       {/* Payment History */}
-      <Card className='mt-6'>
+      <Card className="mt-6">
         <CardHeader>
           <CardTitle>Payment History</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             {paymentHistory.map((payment) => (
-              <Card key={payment.paymentId} className="shadow-md border-primary/20">
-                <CardHeader className="pb-2 flex flex-row items-center justify-between">
+              <Card key={payment.paymentId} className="border-primary/20 shadow-md">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <div className="flex items-center gap-2">
                     <CalendarIcon className="h-4 w-4 text-blue-500" />
                     <span className="text-base font-semibold text-blue-700">
@@ -544,8 +528,8 @@ function PaymentHistory() {
                       <span className="text-sm font-semibold">₹{payment.interestAmount}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <IndianRupee className="h-4 w-4 text-primary" />
-                      <span className="text-sm font-medium text-primary">Total Payment:</span>
+                      <IndianRupee className="text-primary h-4 w-4" />
+                      <span className="text-primary text-sm font-medium">Total Payment:</span>
                       <span className="text-base font-bold">₹{payment.paymentAmount}</span>
                     </div>
                   </div>
@@ -559,7 +543,7 @@ function PaymentHistory() {
         <Button onClick={() => router.back()}>Back</Button>
       </div>
     </div>
-  )
+  );
 }
 
-export default PaymentHistory
+export default PaymentHistory;
