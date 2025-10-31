@@ -2,7 +2,7 @@ name: Build and Deploy Frontend
 
 on:
   push:
-    branches: [main] # or whichever branch you deploy from
+    branches: [main] # your deployment branch
 
 jobs:
   build-and-deploy:
@@ -13,23 +13,23 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Set up Node.js
+      # 2️⃣ Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18 # or 20 depending on your project
+          node-version: 18
 
       # 3️⃣ Install dependencies
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      # 4️⃣ Build your frontend
-      - name: Build project
+      # 4️⃣ Build Next.js project
+      - name: Build Next.js project
         run: npm run build
 
-      # 5️⃣ Deploy (copy build to your web directory)
-      - name: Deploy to EC2
+      # 5️⃣ Start with PM2 (for Next.js)
+      - name: Deploy Next.js app with PM2
         run: |
           pm2 delete sajag-frontend || true
-          pm2 serve build 3000 --name sajag-frontend --spa
+          pm2 start npm --name "sajag-frontend" -- run start
           pm2 save
