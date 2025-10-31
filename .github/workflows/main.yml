@@ -1,28 +1,35 @@
-name: Build and Deploy
+name: Build and Deploy Frontend
 
 on:
   push:
-    branches: [ main ]
+    branches: [main] # or whichever branch you deploy from
 
 jobs:
   build-and-deploy:
-    runs-on: self-hosted   # Use your EC2 self-hosted runner
+    runs-on: self-hosted # your EC2 runner
 
     steps:
       # 1️⃣ Checkout code
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      # 2️⃣ Install dependencies
+      # 2️⃣ Set up Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18 # or 20 depending on your project
+
+      # 3️⃣ Install dependencies
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
-      # 3️⃣ Build the project
+      # 4️⃣ Build your frontend
       - name: Build project
         run: npm run build
 
-      # 4️⃣ Deploy to EC2
+      # 5️⃣ Deploy (copy build to your web directory)
       - name: Deploy to EC2
         run: |
           pm2 delete sajag-frontend || true
           pm2 serve build 3000 --name sajag-frontend --spa
+          pm2 save
