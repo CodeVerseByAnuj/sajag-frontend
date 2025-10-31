@@ -1,31 +1,28 @@
-name: Build and Deploy Frontend
+name: Build and Deploy
 
 on:
   push:
-    branches: [main]
+    branches: [ main ]
 
 jobs:
   build-and-deploy:
-    runs-on: self-hosted
+    runs-on: self-hosted   # Use your EC2 self-hosted runner
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      # 1️⃣ Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
+      # 2️⃣ Install dependencies
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Clean and install dependencies
-        run: |
-          rm -rf .next node_modules
-          npm ci
-
+      # 3️⃣ Build the project
       - name: Build project
-        run: NODE_OPTIONS="--max_old_space_size=4096" npm run build
+        run: npm run build
 
-      - name: Deploy with PM2
+      # 4️⃣ Deploy to EC2
+      - name: Deploy to EC2
         run: |
           pm2 delete sajag-frontend || true
-          pm2 start npm --name "sajag-frontend" -- run start
+          pm2 serve build 3000 --name sajag-frontend --spa
