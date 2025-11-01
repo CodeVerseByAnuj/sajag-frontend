@@ -2,34 +2,36 @@ name: Build and Deploy Next.js Frontend
 
 on:
   push:
-    branches: [main]
+    branches: ['main']
+  pull_request:
+    branches: ['main']
 
 jobs:
   build-and-deploy:
     runs-on: self-hosted
+    if: github.ref == 'refs/heads/main'
 
     steps:
-      # 1️⃣ Checkout code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Setup Node.js
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18
-
-      # 3️⃣ Install dependencies
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
-      # 4️⃣ Build Next.js
       - name: Build project
         run: npm run build
 
-      # 5️⃣ Deploy Next.js using PM2
       - name: Deploy with PM2
         run: |
-          pm2 delete sajag-frontend || true
-          pm2 start npm --name "sajag-frontend" -- start
+          APP_NAME="sajag-frontend"
+
+          if pm2 list | grep -q "$APP_NAME"; then
+            echo "🔁 Restarting existing PM2 process: $APP_NAME"
+            pm2 restart "$APP_NAME"
+          else
+            echo "🚀 Starting new PM2 process: $APP_NAME"
+            pm2 start npm --name "$APP_NAME" -- start
+          fi
+
           pm2 save
+          pm2 status
